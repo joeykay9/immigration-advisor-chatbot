@@ -2,16 +2,49 @@ version: 2.1
 orbs:
   node: circleci/node@1.1.6
 jobs:
-  build-and-test:
-    executor:
-      name: node/default
+  build:
+    docker:
+      - image: circleci/node:12.14.0
+
+    working_directory: ~/immigration-advisor-chatbot/immibot
     steps:
       - checkout
       - node/with-cache:
+
           steps:
-            - run: npm install
-            - run: npm test
+            - run:
+                name: Install npm dependencies
+                command: npm install
+            - run:
+                name: Run build
+                command: npm run build
+
+  deploy-to-heroku:
+    machine: true
+    working_directory: ~/immigration-advisor-chatbot/immibot
+    steps:
+      - checkout
+      - run:
+          name: "Install Heroku CLI, if necessary"
+          command: |
+            curl https://cli-assets.heroku.com/install.sh | sh
+
+      - run:
+          name: Login into heroku docker repo
+          command: |
+            docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY registry.heroku.com
+      - run:
+          name: Deploy heroku container
+          command: |
+            heroku container:push web -a immibot
+            heroku container:release web -a immibot
+
 workflows:
-    build-and-test:
-      jobs:
-        - build-and-test
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build
+      - deploy-to-heroku:
+          requires:
+            - build
+
