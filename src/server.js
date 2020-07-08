@@ -44,7 +44,7 @@ app.post('/nationality-response', (req, res) => {
 
     let nationality = req.body.Field_name_Value
 
-    console.log(nationality)
+    console.log(req.body)
     
     let eea_countries = ["Austria", "Belgium", "Bulgaria", "Croatia", "Cyprus", "Republic of Cyprus", "Czech Republic", 
                 "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hungary", "Iceland", "Ireland", "Italy", "Latvia", 
