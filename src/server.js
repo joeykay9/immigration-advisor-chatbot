@@ -1,14 +1,20 @@
+import "dotenv/convig"
 import express from "express"
-import dotenv from "dotenv"
-
-dotenv.config()
+import bodyParser from 'body-parser'
 
 const app = express()
+const bodyParserJSON = bodyParser.json();
+const bodyParserURLEncoded = bodyParser.urlencoded({ extended: true });
+
+app.use(bodyParserJSON);
+app.use(bodyParserURLEncoded);
 
 app.get('/', (req, res) => res.send('Hello World!'))
 
-app.post('/name-response', (context, event, callback) => {
+app.post('/name-response', (req, res) => {
     
+    console.log(req.body)
+
     let name = event.Field_name_Value
     
     const responseObject = {

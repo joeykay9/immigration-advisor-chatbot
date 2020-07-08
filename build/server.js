@@ -2,17 +2,27 @@
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
+require("dotenv/convig");
+
 var _express = _interopRequireDefault(require("express"));
 
-var _dotenv = _interopRequireDefault(require("dotenv"));
-
-_dotenv["default"].config();
+var _bodyParser = _interopRequireDefault(require("body-parser"));
 
 var app = (0, _express["default"])();
+
+var bodyParserJSON = _bodyParser["default"].json();
+
+var bodyParserURLEncoded = _bodyParser["default"].urlencoded({
+  extended: true
+});
+
+app.use(bodyParserJSON);
+app.use(bodyParserURLEncoded);
 app.get('/', function (req, res) {
   return res.send('Hello World!');
 });
-app.post('/name-response', function (context, event, callback) {
+app.post('/name-response', function (req, res) {
+  console.log(req.body);
   var name = event.Field_name_Value;
   var responseObject = {
     "actions": [{
