@@ -4,15 +4,18 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 
 var _express = _interopRequireDefault(require("express"));
 
+var _dotenv = _interopRequireDefault(require("dotenv"));
+
+_dotenv["default"].config();
+
 var app = (0, _express["default"])();
-var port = 3000;
 app.get('/', function (req, res) {
   return res.send('Hello World!');
 });
 app.get('/name-response', function (req, res) {
   return res.send('Pending Twilio function');
 });
-app.listen(port, function () {
-  return console.log("Example app listening at http://localhost:".concat(port));
+app.listen(process.env.PORT, function () {
+  return console.log("Example app listening at http://localhost:".concat(process.env.PORT));
 });
 //# sourceMappingURL=server.js.map
