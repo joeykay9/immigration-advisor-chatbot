@@ -12,7 +12,7 @@ var app = (0, _express["default"])();
 app.get('/', function (req, res) {
   return res.send('Hello World!');
 });
-app.get('/name-response', function (context, event, callback) {
+app.post('/name-response', function (context, event, callback) {
   var name = event.Field_name_Value;
   var responseObject = {
     "actions": [{

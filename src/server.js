@@ -7,7 +7,7 @@ const app = express()
 
 app.get('/', (req, res) => res.send('Hello World!'))
 
-app.get('/name-response', (context, event, callback) => {
+app.post('/name-response', (context, event, callback) => {
     
     let name = event.Field_name_Value
     
