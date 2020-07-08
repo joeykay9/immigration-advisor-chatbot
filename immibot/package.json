@@ -12,5 +12,8 @@
     "system"
   ],
   "author": "Joel Klo <joeykay9@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "twilio": "^3.47.0"
+  }
 }
