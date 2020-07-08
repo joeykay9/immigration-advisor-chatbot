@@ -37,7 +37,7 @@ app.post('/name-response', function (req, res, callback) {
       }
     }]
   };
-  callback(null, responseObject);
+  return res.json(responseObject);
 });
 app.listen(process.env.PORT, function () {
   return console.log("Example app listening at http://localhost:".concat(process.env.PORT));
