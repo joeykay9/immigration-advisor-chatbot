@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon ./build/server.js",
     "start": "pm2-runtime start ./build/server.js",
-    "build": "babel src --out-dir build --source-maps --watch"
+    "build:dev": "babel src --out-dir build --source-maps --watch",
+    "build":"babel src --out-dir build --source-maps"
   },
   "keywords": [
     "chatbot",
