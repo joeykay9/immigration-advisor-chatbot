@@ -13,11 +13,11 @@ app.use(bodyParserURLEncoded);
 
 app.get('/', (req, res) => res.send('Hello World!'))
 
-app.post('/name-response', (req, res) => {
+app.post('/name-response', (req, res, callback) => {
     
     console.log(req.body)
 
-    let name = event.Field_name_Value
+    let name = req.body.Field_name_Value
     
     const responseObject = {
         "actions": [

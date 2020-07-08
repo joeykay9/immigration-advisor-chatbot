@@ -23,9 +23,9 @@ app.use(bodyParserURLEncoded);
 app.get('/', function (req, res) {
   return res.send('Hello World!');
 });
-app.post('/name-response', function (req, res) {
+app.post('/name-response', function (req, res, callback) {
   console.log(req.body);
-  var name = event.Field_name_Value;
+  var name = req.body.Field_name_Value;
   var responseObject = {
     "actions": [{
       "say": name + " 😊. That's a lovely name."
