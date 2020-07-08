@@ -4,7 +4,10 @@
   "description": "Server for the immigration advisor chatbot",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon ./build/server.js",
+    "start": "pm2-runtime start ./build/server.js",
+    "compile": "babel src --out-dir build --source-maps --watch"
   },
   "keywords": [
     "chatbot",
@@ -14,6 +17,15 @@
   "author": "Joel Klo <joeykay9@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "express": "^4.17.1",
+    "neode": "^0.4.5",
+    "pm2": "^4.4.0",
     "twilio": "^3.47.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.10.4",
+    "@babel/core": "^7.10.4",
+    "@babel/plugin-transform-runtime": "^7.10.4",
+    "@babel/preset-env": "^7.10.4"
   }
 }
