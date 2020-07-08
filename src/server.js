@@ -25,7 +25,7 @@ app.post('/name-response', (req, res) => {
                 "say": name + " 😊. That's a lovely name."
             },
             {
-                "say": "What is your nationality?"
+                "say": "What is your nationality or which country are you from?"
             },
             {
                 "listen": {
@@ -41,18 +41,23 @@ app.post('/name-response', (req, res) => {
 })
 
 app.post('/nationality-response', (req, res) => {
-    
-    console.log(req.body)
 
     let nationality = req.body.Field_name_Value
+
+    console.log(nationality)
     
-    let eea = ["Austria", "Belgium", "Bulgaria", "Croatia", "Cyprus", "Czechia", "Denmark", "Estonia",
-                "Finland", "France", "Germany", "Greece", "Hungary", "Iceland", "Ireland", "Italy", "Latvia", 
+    let eea_countries = ["Austria", "Belgium", "Bulgaria", "Croatia", "Cyprus", "Republic of Cyprus", "Czech Republic", 
+                "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hungary", "Iceland", "Ireland", "Italy", "Latvia", 
                 "Liechtenstein", "Lithuania", "Luxembourg", "Malta", "Netherlands", "Norway", "Poland", 
                 "Portugal", "Romania", "Slovakia", "Slovenia", "Spain", "Sweden", "Switzerland"]
+
+    let eea_nationalities = ["Austrian", "Belgian", "Bulgarian", "Croatian", "Cypriot", "Czech", "Danish", "Estonian",
+                "Finnish", "French", "German", "Greek", "Hungarian", "Icelandic", "Irish", "Italian", "Latvian", 
+                "Liechtenstein", "Lithuanian", "Luxembourger", "Maltese", "Dutch", "Norwegian", "Polish", 
+                "Portugese", "Romanian", "Slovak", "Slovenian", "Spanish", "Swedish", "Swiss"]
     
-    function isEAA(country){
-        return country == nationality
+    function isEAA(string){
+        return string.toLowerCase() == nationality.toLowerCase()
     }      
     
     let responseObject = {
@@ -73,7 +78,7 @@ app.post('/nationality-response', (req, res) => {
         ]
     };
     
-    if(eea.find(isEAA)){
+    if(eea_countries.find(isEAA) || eea_nationalities.find(isEAA)){
         responseObject = {
             "actions": [
         		{
@@ -85,8 +90,6 @@ app.post('/nationality-response', (req, res) => {
             ]
         };
     }
-    
-    console.log(eea.find(isEAA))
     
     return res.json(responseObject)
 })

@@ -30,7 +30,7 @@ app.post('/name-response', function (req, res) {
     "actions": [{
       "say": name + " 😊. That's a lovely name."
     }, {
-      "say": "What is your nationality?"
+      "say": "What is your nationality or which country are you from?"
     }, {
       "listen": {
         "tasks": ["respond_to_nationality"]
@@ -40,12 +40,13 @@ app.post('/name-response', function (req, res) {
   return res.json(responseObject);
 });
 app.post('/nationality-response', function (req, res) {
-  console.log(req.body);
   var nationality = req.body.Field_name_Value;
-  var eea = ["Austria", "Belgium", "Bulgaria", "Croatia", "Cyprus", "Czechia", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hungary", "Iceland", "Ireland", "Italy", "Latvia", "Liechtenstein", "Lithuania", "Luxembourg", "Malta", "Netherlands", "Norway", "Poland", "Portugal", "Romania", "Slovakia", "Slovenia", "Spain", "Sweden", "Switzerland"];
+  console.log(nationality);
+  var eea_countries = ["Austria", "Belgium", "Bulgaria", "Croatia", "Cyprus", "Republic of Cyprus", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hungary", "Iceland", "Ireland", "Italy", "Latvia", "Liechtenstein", "Lithuania", "Luxembourg", "Malta", "Netherlands", "Norway", "Poland", "Portugal", "Romania", "Slovakia", "Slovenia", "Spain", "Sweden", "Switzerland"];
+  var eea_nationalities = ["Austrian", "Belgian", "Bulgarian", "Croatian", "Cypriot", "Czech", "Danish", "Estonian", "Finnish", "French", "German", "Greek", "Hungarian", "Icelandic", "Irish", "Italian", "Latvian", "Liechtenstein", "Lithuanian", "Luxembourger", "Maltese", "Dutch", "Norwegian", "Polish", "Portugese", "Romanian", "Slovak", "Slovenian", "Spanish", "Swedish", "Swiss"];
 
-  function isEAA(country) {
-    return country == nationality;
+  function isEAA(string) {
+    return string.toLowerCase() == nationality.toLowerCase();
   }
 
   var responseObject = {
@@ -60,7 +61,7 @@ app.post('/nationality-response', function (req, res) {
     }]
   };
 
-  if (eea.find(isEAA)) {
+  if (eea_countries.find(isEAA) || eea_nationalities.find(isEAA)) {
     responseObject = {
       "actions": [{
         "say": "You do not need a visa to come to the UK. 😊"
@@ -70,7 +71,6 @@ app.post('/nationality-response', function (req, res) {
     };
   }
 
-  console.log(eea.find(isEAA));
   return res.json(responseObject);
 });
 app.listen(process.env.PORT, function () {
