@@ -12,8 +12,20 @@ var app = (0, _express["default"])();
 app.get('/', function (req, res) {
   return res.send('Hello World!');
 });
-app.get('/name-response', function (req, res) {
-  return res.send('Pending Twilio function');
+app.get('/name-response', function (context, event, callback) {
+  var name = event.Field_name_Value;
+  var responseObject = {
+    "actions": [{
+      "say": name + " 😊. That's a lovely name."
+    }, {
+      "say": "What is your nationality?"
+    }, {
+      "listen": {
+        "tasks": ["respond_to_nationality"]
+      }
+    }]
+  };
+  callback(null, responseObject);
 });
 app.listen(process.env.PORT, function () {
   return console.log("Example app listening at http://localhost:".concat(process.env.PORT));
