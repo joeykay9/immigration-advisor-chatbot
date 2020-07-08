@@ -2,11 +2,13 @@
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-require("dotenv/convig");
+var _dotenv = _interopRequireDefault(require("dotenv"));
 
 var _express = _interopRequireDefault(require("express"));
 
 var _bodyParser = _interopRequireDefault(require("body-parser"));
+
+_dotenv["default"].config();
 
 var app = (0, _express["default"])();
 
