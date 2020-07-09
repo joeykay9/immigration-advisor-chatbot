@@ -117,11 +117,14 @@ app.post('/purpose-response', function (req, res) {
   return res.json(responseObject);
 });
 app.post('/study-duration-response', function (req, res) {
-  var nationality = req.body.nationality;
-  var months = req.body.Field_months_Value;
+  var nationality = req.body.nationality; //Get user's nationality from memory
+
+  var months = req.body.Field_months_Value; //Get study duration (number of months) from user's answer
+
   var six_months_visa_free_countries = ["Andorra", "Antigua and Barbuda", "Argentina", "Australia", "Bahamas", "Barbados", "Belize", "Botswana", "Brazil", "Brunei", "Canada", "Chile", "Costa Rica", "Dominica", "East Timor", "El Salvador", "Grenada", "Guatemala", "Honduras", "Hong Kong", "Israel", "Japan", "Kiribati", "Macau", "Malaysia", "Maldives", "Marshall Islands", "Mauritius", "Mexico", "Micronesia", "Monaco", "Namibia", "Nauru", "New Zealand", "Nicaragua", "Palau", "Panama", "Papua New Guinea", "Paraguay", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Seychelles", "Singapore", "Solomon Islands", "South Korea", "Taiwan", "Tonga", "Trinidad and Tobago", "Tuvalu", "United States of America", "Uruguay", "Vanuatu", "Vatican City"];
 
   function isSixMonthsVisaFreeCountry(string) {
+    //Check if nationality is part of six month visa free countries
     return string.toLowerCase() == nationality.toLowerCase();
   }
 
@@ -146,12 +149,53 @@ app.post('/study-duration-response', function (req, res) {
   } else if (duration > 6) {
     responseObject = {
       "actions": [{
-        "say": "You will need to apply for a Short-term study visa if you are studying for 6 months or less."
+        "say": "Alright, great."
+      }, {
+        "say": "How old are you?"
+      }, {
+        "listen": {
+          tasks: ["respond_to_age"]
+        }
+      }]
+    };
+  }
+
+  return res.json(responseObject);
+});
+app.post('/age-response', function (req, res) {
+  var age = req.body.Field_age_value;
+  var responseObject = {};
+
+  if (age >= 16) {
+    responseObject = {
+      "actions": [{
+        "say": "You will need to apply for the Tier 4 (General) Student visa."
+      }, {
+        "remember": {
+          "section": "Tier 4 (General) Student" //to be used to query the database
+
+        }
+      }, {
+        "say": "Do you want to know the requirements and conditions for a successful Tier 4 (General) Student visa application?"
+      }, {
+        "listen": {
+          tasks: [//"tier-4-requirements-and-conditions",
+          "goodbye" //just for testing
+          ]
+        }
+      }]
+    };
+  } else {
+    responseObject = {
+      "actions": [{
+        "say": "You will need to apply for the Tier 4 (Child) Student visa."
       }, {
         "redirect": "task://goodbye"
       }]
     };
   }
+
+  return res.json(responseObject);
 });
 app.listen(process.env.PORT, function () {
   return console.log("Example app listening at http://localhost:".concat(process.env.PORT));

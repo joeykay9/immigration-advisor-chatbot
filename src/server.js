@@ -149,8 +149,8 @@ app.post('/purpose-response', (req, res) => {
 
 app.post('/study-duration-response', (req, res) => {
 
-    let nationality = req.body.nationality
-    let months = req.body.Field_months_Value
+    let nationality = req.body.nationality //Get user's nationality from memory
+    let months = req.body.Field_months_Value //Get study duration (number of months) from user's answer
     
     let six_months_visa_free_countries = ["Andorra", "Antigua and Barbuda", "Argentina", "Australia",
         "Bahamas", "Barbados", "Belize", "Botswana", "Brazil", "Brunei", "Canada", "Chile", "Costa Rica", 
@@ -162,7 +162,7 @@ app.post('/study-duration-response', (req, res) => {
         "South Korea", "Taiwan", "Tonga", "Trinidad and Tobago", "Tuvalu", "United States of America", 
         "Uruguay", "Vanuatu", "Vatican City"]
 
-    function isSixMonthsVisaFreeCountry(string){
+    function isSixMonthsVisaFreeCountry(string){ //Check if nationality is part of six month visa free countries
         return string.toLowerCase() == nationality.toLowerCase()
     }
 
@@ -194,15 +194,69 @@ app.post('/study-duration-response', (req, res) => {
         responseObject = {
             "actions": [
                 {
-                    "say": "You will need to apply for a Short-term study visa if you are studying for 6 months or less."
+                    "say": "Alright, great."
+                },
+                {
+                    "say": "How old are you?"
+                },
+                {
+                    "listen": {
+                        tasks: [
+                            "respond_to_age"
+                        ]
+                    }
+                },
+            ]
+        };
+    }
+
+    return res.json(responseObject)
+})
+
+app.post('/age-response', (req, res) => {
+
+    let age = req.body.Field_age_value
+
+    let responseObject = {}
+
+    if(age >= 16){
+        responseObject = {
+            "actions": [
+                {
+                    "say": "You will need to apply for the Tier 4 (General) Student visa."
+                },
+                {
+                    "remember": {
+                        "section": "Tier 4 (General) Student" //to be used to query the database
+                    }
+                },
+                {
+                    "say": "Do you want to know the requirements and conditions for a successful Tier 4 (General) Student visa application?"
+                },
+                {
+                    "listen": {
+                        tasks: [
+                            //"tier-4-requirements-and-conditions",
+                            "goodbye" //just for testing
+                        ]
+                    }
+                },
+            ]
+        }
+    } else {
+        responseObject = {
+            "actions": [
+                {
+                    "say": "You will need to apply for the Tier 4 (Child) Student visa."
                 },
                 {
                     "redirect": "task://goodbye"
                 }
             ]
-        };
+        }
     }
-
+    
+    return res.json(responseObject)
 })
 
 app.listen(process.env.PORT, () => console.log(`Example app listening at http://localhost:${process.env.PORT}`))
