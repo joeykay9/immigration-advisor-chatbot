@@ -18,6 +18,10 @@ app.post('/name-response', (req, res) => {
     console.log(req.body)
 
     let name = req.body.Field_name_Value
+
+    if(!(name)){ //user entered two words instead of one
+        name = req.body.CurrentInput.split(' ')[0]
+    }
     
     const responseObject = {
         "actions": [
@@ -43,6 +47,13 @@ app.post('/name-response', (req, res) => {
 app.post('/nationality-response', (req, res) => {
 
     let nationality = req.body.Field_nationality_Value
+
+    if(!(nationality)){ //user entered string which is not a country
+        nationality = req.body.Field_language_Value
+
+        if(!(nationality)) //user entered string which is not a language
+            nationality = req.body.CurrentInput
+    }
 
     console.log(req.body)
     
