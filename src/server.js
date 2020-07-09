@@ -217,11 +217,15 @@ app.post('/study-duration-response', (req, res) => {
 
 app.post('/age-response', (req, res) => {
 
+    console.log(req.body)
+
     let age = req.body.Field_age_Value
+
+    console.log(age)
 
     let responseObject = {}
 
-    if(age >= 16){
+    if(age >= 16) {
         responseObject = {
             "actions": [
                 {
