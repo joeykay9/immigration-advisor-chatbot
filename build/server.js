@@ -112,6 +112,16 @@ app.post('/purpose-response', function (req, res) {
         }
       }]
     };
+  } else {
+    responseObject = {
+      "actions": [{
+        "say": "I'm sorry I will not be able to help you."
+      }, {
+        "say": "Currently, I'm trained to give immigration advice concerning study only. I hope to get more training with time."
+      }, {
+        "redirect": "task://goodbye"
+      }]
+    };
   }
 
   return res.json(responseObject);
