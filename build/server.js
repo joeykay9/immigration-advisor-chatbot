@@ -117,7 +117,7 @@ app.post('/purpose-response', function (req, res) {
   return res.json(responseObject);
 });
 app.post('/study-duration-response', function (req, res) {
-  var nationality = req.body.Memory.nationality; //Get user's nationality from memory
+  var nationality = JSON.parse(req.body.Memory).nationality; //Get user's nationality from memory
 
   var months = req.body.Field_months_Value; //Get study duration (number of months) from user's answer
 

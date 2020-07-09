@@ -149,7 +149,7 @@ app.post('/purpose-response', (req, res) => {
 
 app.post('/study-duration-response', (req, res) => {
 
-    let nationality = req.body.Memory.nationality //Get user's nationality from memory
+    let nationality = JSON.parse(req.body.Memory).nationality //Get user's nationality from memory
     let months = req.body.Field_months_Value //Get study duration (number of months) from user's answer
 
     console.log(nationality)
