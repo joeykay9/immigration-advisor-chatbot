@@ -147,5 +147,62 @@ app.post('/purpose-response', (req, res) => {
     return res.json(responseObject)
 })
 
+app.post('/study-duration-response', (req, res) => {
+
+    let nationality = req.body.nationality
+    let months = req.body.Field_months_Value
+    
+    let six_months_visa_free_countries = ["Andorra", "Antigua and Barbuda", "Argentina", "Australia",
+        "Bahamas", "Barbados", "Belize", "Botswana", "Brazil", "Brunei", "Canada", "Chile", "Costa Rica", 
+        "Dominica", "East Timor", "El Salvador", "Grenada", "Guatemala", "Honduras", "Hong Kong", "Israel", 
+        "Japan", "Kiribati", "Macau", "Malaysia", "Maldives", "Marshall Islands", "Mauritius", "Mexico", 
+        "Micronesia", "Monaco", "Namibia", "Nauru", "New Zealand", "Nicaragua", "Palau", "Panama", 
+        "Papua New Guinea", "Paraguay", "Saint Kitts and Nevis", "Saint Lucia", 
+        "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Seychelles", "Singapore", "Solomon Islands", 
+        "South Korea", "Taiwan", "Tonga", "Trinidad and Tobago", "Tuvalu", "United States of America", 
+        "Uruguay", "Vanuatu", "Vatican City"]
+
+    function isSixMonthsVisaFreeCountry(string){
+        return string.toLowerCase() == nationality.toLowerCase()
+    }
+
+    let responseObject = {}
+
+    if(six_months_visa_free_countries.find(isSixMonthsVisaFreeCountry) && duration <= 6){
+        responseObject = {
+            "actions": [
+                {
+                    "say": "Looks like you do not need a visa to come to the UK. 😊"
+                },
+                {
+                    "redirect": "task://goodbye"
+                }
+            ]
+        };
+    } else if(!(six_months_visa_free_countries.find(isSixMonthsVisaFreeCountry)) && duration <= 6){
+        responseObject = {
+            "actions": [
+                {
+                    "say": "You will need to apply for a Short-term study visa if you are studying for 6 months or less."
+                },
+                {
+                    "redirect": "task://goodbye"
+                }
+            ]
+        };
+    } else if(duration > 6) {
+        responseObject = {
+            "actions": [
+                {
+                    "say": "You will need to apply for a Short-term study visa if you are studying for 6 months or less."
+                },
+                {
+                    "redirect": "task://goodbye"
+                }
+            ]
+        };
+    }
+
+})
 
 app.listen(process.env.PORT, () => console.log(`Example app listening at http://localhost:${process.env.PORT}`))
