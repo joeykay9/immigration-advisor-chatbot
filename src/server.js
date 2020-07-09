@@ -170,7 +170,7 @@ app.post('/study-duration-response', (req, res) => {
 
     let responseObject = {}
 
-    if(six_months_visa_free_countries.find(isSixMonthsVisaFreeCountry) && duration <= 6){
+    if(six_months_visa_free_countries.find(isSixMonthsVisaFreeCountry) && months <= 6){
         responseObject = {
             "actions": [
                 {
@@ -181,7 +181,7 @@ app.post('/study-duration-response', (req, res) => {
                 }
             ]
         };
-    } else if(!(six_months_visa_free_countries.find(isSixMonthsVisaFreeCountry)) && duration <= 6){
+    } else if(!(six_months_visa_free_countries.find(isSixMonthsVisaFreeCountry)) && months <= 6){
         responseObject = {
             "actions": [
                 {
@@ -192,7 +192,7 @@ app.post('/study-duration-response', (req, res) => {
                 }
             ]
         };
-    } else if(duration > 6) {
+    } else if(months > 6) {
         responseObject = {
             "actions": [
                 {

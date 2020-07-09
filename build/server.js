@@ -131,7 +131,7 @@ app.post('/study-duration-response', function (req, res) {
 
   var responseObject = {};
 
-  if (six_months_visa_free_countries.find(isSixMonthsVisaFreeCountry) && duration <= 6) {
+  if (six_months_visa_free_countries.find(isSixMonthsVisaFreeCountry) && months <= 6) {
     responseObject = {
       "actions": [{
         "say": "Looks like you do not need a visa to come to the UK. 😊"
@@ -139,7 +139,7 @@ app.post('/study-duration-response', function (req, res) {
         "redirect": "task://goodbye"
       }]
     };
-  } else if (!six_months_visa_free_countries.find(isSixMonthsVisaFreeCountry) && duration <= 6) {
+  } else if (!six_months_visa_free_countries.find(isSixMonthsVisaFreeCountry) && months <= 6) {
     responseObject = {
       "actions": [{
         "say": "You will need to apply for a Short-term study visa if you are studying for 6 months or less."
@@ -147,7 +147,7 @@ app.post('/study-duration-response', function (req, res) {
         "redirect": "task://goodbye"
       }]
     };
-  } else if (duration > 6) {
+  } else if (months > 6) {
     responseObject = {
       "actions": [{
         "say": "Alright, great."
