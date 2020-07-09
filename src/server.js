@@ -26,10 +26,15 @@ app.post('/name-response', (req, res) => {
     const responseObject = {
         "actions": [
             {
+                "remember": {
+                    "name": name
+                }
+            },
+            {
                 "say": name + " 😊. That's a lovely name."
             },
             {
-                "say": "What is your nationality or which country are you from?"
+                "say": "What is your nationality or what country are you from?"
             },
             {
                 "listen": {
@@ -73,6 +78,11 @@ app.post('/nationality-response', (req, res) => {
     
     let responseObject = {
         "actions": [
+            {
+                "remember": {
+                    "nationality": nationality
+                }
+            },
     		{
     			"say": "Ok. Great."
     		},
@@ -93,7 +103,7 @@ app.post('/nationality-response', (req, res) => {
         responseObject = {
             "actions": [
         		{
-        			"say": "You do not need a visa to come to the UK. 😊"
+        			"say": "Looks like you do not need a visa to come to the UK. 😊"
         		},
         		{
         			"redirect": "task://goodbye"

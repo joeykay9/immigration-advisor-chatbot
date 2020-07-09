@@ -34,9 +34,13 @@ app.post('/name-response', function (req, res) {
 
   var responseObject = {
     "actions": [{
+      "remember": {
+        "name": name
+      }
+    }, {
       "say": name + " 😊. That's a lovely name."
     }, {
-      "say": "What is your nationality or which country are you from?"
+      "say": "What is your nationality or what country are you from?"
     }, {
       "listen": {
         "tasks": ["respond_to_nationality"]
@@ -65,6 +69,10 @@ app.post('/nationality-response', function (req, res) {
 
   var responseObject = {
     "actions": [{
+      "remember": {
+        "nationality": nationality
+      }
+    }, {
       "say": "Ok. Great."
     }, {
       "say": "Why do you want to come to the UK?"
@@ -78,7 +86,7 @@ app.post('/nationality-response', function (req, res) {
   if (eea_countries.find(isEAA) || eea_nationalities.find(isEAA)) {
     responseObject = {
       "actions": [{
-        "say": "You do not need a visa to come to the UK. 😊"
+        "say": "Looks like you do not need a visa to come to the UK. 😊"
       }, {
         "redirect": "task://goodbye"
       }]
