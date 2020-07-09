@@ -151,6 +151,8 @@ app.post('/study-duration-response', (req, res) => {
 
     let nationality = req.body.nationality //Get user's nationality from memory
     let months = req.body.Field_months_Value //Get study duration (number of months) from user's answer
+
+    console.log(nationality)
     
     let six_months_visa_free_countries = ["Andorra", "Antigua and Barbuda", "Argentina", "Australia",
         "Bahamas", "Barbados", "Belize", "Botswana", "Brazil", "Brunei", "Canada", "Chile", "Costa Rica", 
