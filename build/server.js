@@ -164,7 +164,7 @@ app.post('/study-duration-response', function (req, res) {
   return res.json(responseObject);
 });
 app.post('/age-response', function (req, res) {
-  var age = req.body.Field_age_value;
+  var age = req.body.Field_age_Value;
   var responseObject = {};
 
   if (age >= 16) {

@@ -217,7 +217,7 @@ app.post('/study-duration-response', (req, res) => {
 
 app.post('/age-response', (req, res) => {
 
-    let age = req.body.Field_age_value
+    let age = req.body.Field_age_Value
 
     let responseObject = {}
 
