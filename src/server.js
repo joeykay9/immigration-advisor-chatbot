@@ -42,7 +42,7 @@ app.post('/name-response', (req, res) => {
 
 app.post('/nationality-response', (req, res) => {
 
-    let nationality = req.body.Field_name_Value
+    let nationality = req.body.Field_nationality_Value
 
     console.log(req.body)
     
