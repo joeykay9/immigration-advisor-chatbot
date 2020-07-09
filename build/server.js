@@ -95,6 +95,27 @@ app.post('/nationality-response', function (req, res) {
 
   return res.json(responseObject);
 });
+app.post('/purpose-response', function (req, res) {
+  console.log(req.body);
+  var purpose = req.body.Field_purpose_Value;
+  var responseObject = {};
+
+  if (purpose == "Study") {
+    responseObject = {
+      "actions": [{
+        "say": "Great."
+      }, {
+        "say": "How many months are you planning to study in the UK for?"
+      }, {
+        "listen": {
+          tasks: ["respond_to_study_duration"]
+        }
+      }]
+    };
+  }
+
+  return res.json(responseObject);
+});
 app.listen(process.env.PORT, function () {
   return console.log("Example app listening at http://localhost:".concat(process.env.PORT));
 });

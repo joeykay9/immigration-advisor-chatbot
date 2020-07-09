@@ -115,4 +115,37 @@ app.post('/nationality-response', (req, res) => {
     return res.json(responseObject)
 })
 
+app.post('/purpose-response', (req, res) => {
+
+    console.log(req.body)
+
+    let purpose = req.body.Field_purpose_Value
+
+    let responseObject = {}
+
+    if(purpose == "Study"){
+
+        responseObject = {
+            "actions": [
+                {
+                    "say": "Great."
+                },
+                {
+                    "say": "How many months are you planning to study in the UK for?"
+                },
+                {
+                    "listen": {
+                        tasks: [
+                            "respond_to_study_duration"
+                        ]
+                    }
+                },
+            ]
+        };
+    }
+    
+    return res.json(responseObject)
+})
+
+
 app.listen(process.env.PORT, () => console.log(`Example app listening at http://localhost:${process.env.PORT}`))
