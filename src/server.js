@@ -17,23 +17,17 @@ app.post('/name-response', (req, res) => {
     
     console.log(req.body)
 
-    let name = req.body.Field_name_Value
-
-    if(!(name)){ //user entered two words instead of one
-        name = req.body.CurrentInput.split(' ')[0]
-    } else {
-        name = name.split(' ')[0]
-    }
+    let firstName = req.body.Field_firstName_Value
     
     const responseObject = {
         "actions": [
             {
                 "remember": {
-                    "name": name
+                    "name": firstName
                 }
             },
             {
-                "say": name + " 😊. That's a lovely name."
+                "say": firstName + " 😊. That's a lovely name."
             },
             {
                 "say": "What is your nationality or what country are you from?"
