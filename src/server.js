@@ -21,6 +21,8 @@ app.post('/name-response', (req, res) => {
 
     if(!(name)){ //user entered two words instead of one
         name = req.body.CurrentInput.split(' ')[0]
+    } else {
+        name = name.split(' ')[0]
     }
     
     const responseObject = {
