@@ -252,8 +252,7 @@ app.post('/age-response', (req, res) => {
                 {
                     "listen": {
                         tasks: [
-                            //"tier-4-requirements-and-conditions",
-                            "goodbye" //just for testing
+                            "tier-4-requirements-and-conditions",
                         ]
                     }
                 },
@@ -272,6 +271,27 @@ app.post('/age-response', (req, res) => {
         }
     }
     
+    return res.json(responseObject)
+})
+
+app.post('/tier-4-requirements-and-conditions', (req, res) => {
+
+    let response = req.body.Field_response_Value
+
+    let responseObject = {}
+
+    if(response == "Yes"){
+
+    } else {
+        responseObject = {
+            "actions": [
+                {
+                    "redirect": "task://goodbye"
+                }
+            ]
+        }
+    }
+
     return res.json(responseObject)
 })
 

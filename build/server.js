@@ -186,9 +186,7 @@ app.post('/age-response', function (req, res) {
         "say": "Do you want to know the requirements and conditions for a successful Tier 4 (General) Student visa application?"
       }, {
         "listen": {
-          tasks: [//"tier-4-requirements-and-conditions",
-          "goodbye" //just for testing
-          ]
+          tasks: ["tier-4-requirements-and-conditions"]
         }
       }]
     };
@@ -197,6 +195,20 @@ app.post('/age-response', function (req, res) {
       "actions": [{
         "say": "You will need to apply for the Tier 4 (Child) Student visa."
       }, {
+        "redirect": "task://goodbye"
+      }]
+    };
+  }
+
+  return res.json(responseObject);
+});
+app.post('/tier-4-requirements-and-conditions', function (req, res) {
+  var response = req.body.Field_response_Value;
+  var responseObject = {};
+
+  if (response == "Yes") {} else {
+    responseObject = {
+      "actions": [{
         "redirect": "task://goodbye"
       }]
     };
