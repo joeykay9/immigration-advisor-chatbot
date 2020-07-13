@@ -1,12 +1,15 @@
 import dotenv from "dotenv"
 import express from "express"
 import bodyParser from 'body-parser'
+import Neode from 'neode';
 
 dotenv.config()
 
 const app = express()
 const bodyParserJSON = bodyParser.json();
 const bodyParserURLEncoded = bodyParser.urlencoded({ extended: true });
+
+const instance = new Neode.fromEnv();
 
 app.use(bodyParserJSON);
 app.use(bodyParserURLEncoded);
@@ -278,10 +281,33 @@ app.post('/tier-4-requirements-and-conditions', (req, res) => {
 
     let response = req.body.Field_response_Value
 
+    let actions = []
+
     let responseObject = {}
 
     if(response == "Yes"){
 
+        instance.cypher('MATCH (s:Section {title: $title}), (p:Paragraph), (r:Rule) ' + 
+                'WHERE (s)-[:CONTAINS]->(p) AND (p)-[:CONTAINS]->(r) RETURN r', 
+                    {
+                        title: "Tier 4 (General) Student" 
+                    })  
+                .then(res => {
+                    let records = res.records.map(record => record._fields[0])
+                    let rules = records.map(record => record.properties.desc)
+                    
+                    rules.array.forEach(rule => {
+                        let say = {
+                            "say": rule
+                        }
+
+                        actions.push(say)
+                    });
+                })
+
+        responseObject = {
+            "actions": actions
+        }
     } else {
         responseObject = {
             "actions": [

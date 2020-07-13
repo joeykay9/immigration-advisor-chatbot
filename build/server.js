@@ -8,6 +8,8 @@ var _express = _interopRequireDefault(require("express"));
 
 var _bodyParser = _interopRequireDefault(require("body-parser"));
 
+var _neode = _interopRequireDefault(require("neode"));
+
 _dotenv["default"].config();
 
 var app = (0, _express["default"])();
@@ -18,6 +20,7 @@ var bodyParserURLEncoded = _bodyParser["default"].urlencoded({
   extended: true
 });
 
+var instance = new _neode["default"].fromEnv();
 app.use(bodyParserJSON);
 app.use(bodyParserURLEncoded);
 app.get('/', function (req, res) {
@@ -204,9 +207,30 @@ app.post('/age-response', function (req, res) {
 });
 app.post('/tier-4-requirements-and-conditions', function (req, res) {
   var response = req.body.Field_response_Value;
+  var actions = [];
   var responseObject = {};
 
-  if (response == "Yes") {} else {
+  if (response == "Yes") {
+    instance.cypher('MATCH (s:Section {title: $title}), (p:Paragraph), (r:Rule) ' + 'WHERE (s)-[:CONTAINS]->(p) AND (p)-[:CONTAINS]->(r) RETURN r', {
+      title: "Tier 4 (General) Student"
+    }).then(function (res) {
+      var records = res.records.map(function (record) {
+        return record._fields[0];
+      });
+      var rules = records.map(function (record) {
+        return record.properties.desc;
+      });
+      rules.array.forEach(function (rule) {
+        var say = {
+          "say": rule
+        };
+        actions.push(say);
+      });
+    });
+    responseObject = {
+      "actions": actions
+    };
+  } else {
     responseObject = {
       "actions": [{
         "redirect": "task://goodbye"
