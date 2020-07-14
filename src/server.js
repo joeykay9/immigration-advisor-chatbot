@@ -1,7 +1,7 @@
 import dotenv from "dotenv"
 import express from "express"
 import bodyParser from 'body-parser'
-import Neode from 'neode';
+import neo4j from 'neo4j-driver'
 
 dotenv.config()
 
@@ -9,7 +9,24 @@ const app = express()
 const bodyParserJSON = bodyParser.json();
 const bodyParserURLEncoded = bodyParser.urlencoded({ extended: true });
 
-const instance = new Neode.fromEnv();
+const driver = neo4j.driver(
+    process.env.AURA_ENDPOINT, 
+    neo4j.auth.basic(process.env.AURA_USERNAME, process.env.AURA_PASSWORD), 
+    { 
+        encrypted: true 
+    } 
+);
+
+const session = driver.session()
+
+const readRulesBySection = (sectionTitle) => {
+    const query = `
+        MATCH (s:Section {title: $sectionTitle}), (p:Paragraph), (r:Rule)
+        WHERE (s)-[:CONTAINS]->(p) AND (p)-[:CONTAINS]->(r) 
+        RETURN r`;
+
+    return session.readTransaction(tx => tx.run(query, { sectionTitle }))
+}
 
 app.use(bodyParserJSON);
 app.use(bodyParserURLEncoded);
@@ -286,28 +303,28 @@ app.post('/tier-4-requirements-and-conditions', (req, res) => {
     let responseObject = {}
 
     if(response == "Yes"){
-
-        instance.cypher('MATCH (s:Section {title: $title}), (p:Paragraph), (r:Rule) ' + 
-                'WHERE (s)-[:CONTAINS]->(p) AND (p)-[:CONTAINS]->(r) RETURN r', 
-                    {
-                        title: "Tier 4 (General) Student" 
-                    })  
-                .then(res => {
-                    let records = res.records.map(record => record._fields[0])
-                    let rules = records.map(record => record.properties.desc)
-                    
-                    rules.array.forEach(rule => {
-                        let say = {
-                            "say": rule
-                        }
-
-                        actions.push(say)
-                    });
+        
+        readRulesBySection('Tier 4 (General) Student')
+        .then(results => {
+                let records = results.records.map(record => record._fields[0])
+                let rules = records.map(record => record.properties.desc)
+    
+                rules.forEach(rule => {
+                    let say = {
+                        "say": rule
+                    }
+    
+                    actions.push(say)
                 })
 
-        responseObject = {
-            "actions": actions
-        }
+                responseObject = {
+                    "actions": actions
+                }
+
+                return res.json(responseObject)
+            })
+            .finally(() => session.close());
+
     } else {
         responseObject = {
             "actions": [
@@ -316,9 +333,9 @@ app.post('/tier-4-requirements-and-conditions', (req, res) => {
                 }
             ]
         }
-    }
 
-    return res.json(responseObject)
+        return res.json(responseObject)
+    }
 })
 
 app.listen(process.env.PORT, () => console.log(`Example app listening at http://localhost:${process.env.PORT}`))

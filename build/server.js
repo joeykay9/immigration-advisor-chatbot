@@ -8,7 +8,7 @@ var _express = _interopRequireDefault(require("express"));
 
 var _bodyParser = _interopRequireDefault(require("body-parser"));
 
-var _neode = _interopRequireDefault(require("neode"));
+var _neo4jDriver = _interopRequireDefault(require("neo4j-driver"));
 
 _dotenv["default"].config();
 
@@ -20,7 +20,21 @@ var bodyParserURLEncoded = _bodyParser["default"].urlencoded({
   extended: true
 });
 
-var instance = new _neode["default"].fromEnv();
+var driver = _neo4jDriver["default"].driver(process.env.AURA_ENDPOINT, _neo4jDriver["default"].auth.basic(process.env.AURA_USERNAME, process.env.AURA_PASSWORD), {
+  encrypted: true
+});
+
+var session = driver.session();
+
+var readRulesBySection = function readRulesBySection(sectionTitle) {
+  var query = "\n        MATCH (s:Section {title: $sectionTitle}), (p:Paragraph), (r:Rule)\n        WHERE (s)-[:CONTAINS]->(p) AND (p)-[:CONTAINS]->(r) \n        RETURN r";
+  return session.readTransaction(function (tx) {
+    return tx.run(query, {
+      sectionTitle: sectionTitle
+    });
+  });
+};
+
 app.use(bodyParserJSON);
 app.use(bodyParserURLEncoded);
 app.get('/', function (req, res) {
@@ -211,34 +225,34 @@ app.post('/tier-4-requirements-and-conditions', function (req, res) {
   var responseObject = {};
 
   if (response == "Yes") {
-    instance.cypher('MATCH (s:Section {title: $title}), (p:Paragraph), (r:Rule) ' + 'WHERE (s)-[:CONTAINS]->(p) AND (p)-[:CONTAINS]->(r) RETURN r', {
-      title: "Tier 4 (General) Student"
-    }).then(function (res) {
-      var records = res.records.map(function (record) {
+    readRulesBySection('Tier 4 (General) Student').then(function (results) {
+      var records = results.records.map(function (record) {
         return record._fields[0];
       });
       var rules = records.map(function (record) {
         return record.properties.desc;
       });
-      rules.array.forEach(function (rule) {
+      rules.forEach(function (rule) {
         var say = {
           "say": rule
         };
         actions.push(say);
       });
+      responseObject = {
+        "actions": actions
+      };
+      return res.json(responseObject);
+    })["finally"](function () {
+      return session.close();
     });
-    responseObject = {
-      "actions": actions
-    };
   } else {
     responseObject = {
       "actions": [{
         "redirect": "task://goodbye"
       }]
     };
+    return res.json(responseObject);
   }
-
-  return res.json(responseObject);
 });
 app.listen(process.env.PORT, function () {
   return console.log("Example app listening at http://localhost:".concat(process.env.PORT));
