@@ -350,7 +350,7 @@ app.post('/tier-4-requirements-and-conditions/:paragraph', (req, res) => {
 
     let responseObject = {}
         
-    readRulesByParagraph(paragraph)
+    readRulesByParagraph(paragraphTitle)
     .then(results => {
             let records = results.records.map(record => record._fields[0])
             let rules = records.map(record => record.properties.desc)
