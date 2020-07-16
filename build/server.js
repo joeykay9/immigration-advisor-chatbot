@@ -35,6 +35,15 @@ var readRulesBySection = function readRulesBySection(sectionTitle) {
   });
 };
 
+var readRulesByParagraph = function readRulesByParagraph(paragraphTitle) {
+  var query = "\n        MATCH (p:Paragraph {title: $paragraphTitle}), (r:Rule)\n        WHERE (p)-[:CONTAINS]->(r) \n        RETURN r";
+  return session.readTransaction(function (tx) {
+    return tx.run(query, {
+      paragraphTitle: paragraphTitle
+    });
+  });
+};
+
 app.use(bodyParserJSON);
 app.use(bodyParserURLEncoded);
 app.get('/', function (req, res) {
@@ -200,7 +209,7 @@ app.post('/age-response', function (req, res) {
 
         }
       }, {
-        "say": "Do you want to know the requirements and conditions for a successful Tier 4 (General) Student visa application?"
+        "say": "Do you want to know the requirements and conditions for a successful Tier 4 (General) Student visa application under the Point Based System?"
       }, {
         "listen": {
           tasks: ["tier-4-requirements-and-conditions"]
@@ -253,6 +262,33 @@ app.post('/tier-4-requirements-and-conditions', function (req, res) {
     };
     return res.json(responseObject);
   }
+});
+app.post('/tier-4-requirements-and-conditions/:paragraph', function (req, res) {
+  var paragraph = req.params.paragraph;
+  console.log(paragraph);
+  var actions = [];
+  var responseObject = {};
+  readRulesBySection('Tier 4 (General) Student').then(function (results) {
+    var records = results.records.map(function (record) {
+      return record._fields[0];
+    });
+    var rules = records.map(function (record) {
+      return record.properties.desc;
+    });
+    rules.forEach(function (rule) {
+      var say = {
+        "say": rule
+      };
+      actions.push(say);
+    });
+    responseObject = {
+      "actions": actions
+    };
+    return res.json(responseObject);
+  })["finally"](function () {
+    return session.close();
+  });
+  return res.json(responseObject);
 });
 app.listen(process.env.PORT, function () {
   return console.log("Example app listening at http://localhost:".concat(process.env.PORT));

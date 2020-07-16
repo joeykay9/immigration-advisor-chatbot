@@ -28,6 +28,15 @@ const readRulesBySection = (sectionTitle) => {
     return session.readTransaction(tx => tx.run(query, { sectionTitle }))
 }
 
+const readRulesByParagraph = (paragraphTitle) => {
+    const query = `
+        MATCH (p:Paragraph {title: $paragraphTitle}), (r:Rule)
+        WHERE (p)-[:CONTAINS]->(r) 
+        RETURN r`;
+
+    return session.readTransaction(tx => tx.run(query, { paragraphTitle }))
+}
+
 app.use(bodyParserJSON);
 app.use(bodyParserURLEncoded);
 
@@ -267,7 +276,7 @@ app.post('/age-response', (req, res) => {
                     }
                 },
                 {
-                    "say": "Do you want to know the requirements and conditions for a successful Tier 4 (General) Student visa application?"
+                    "say": "Do you want to know the requirements and conditions for a successful Tier 4 (General) Student visa application under the Point Based System?"
                 },
                 {
                     "listen": {
@@ -336,6 +345,41 @@ app.post('/tier-4-requirements-and-conditions', (req, res) => {
 
         return res.json(responseObject)
     }
+})
+
+app.post('/tier-4-requirements-and-conditions/:paragraph', (req, res) => {
+
+    let paragraph = req.params.paragraph
+
+    console.log(paragraph)
+
+    let actions = []
+
+    let responseObject = {}
+        
+    readRulesBySection('Tier 4 (General) Student')
+    .then(results => {
+            let records = results.records.map(record => record._fields[0])
+            let rules = records.map(record => record.properties.desc)
+
+            rules.forEach(rule => {
+                let say = {
+                    "say": rule
+                }
+
+                actions.push(say)
+            })
+
+            responseObject = {
+                "actions": actions
+            }
+
+            return res.json(responseObject)
+        })
+        .finally(() => session.close());
+
+
+        return res.json(responseObject)
 })
 
 app.listen(process.env.PORT, () => console.log(`Example app listening at http://localhost:${process.env.PORT}`))
