@@ -234,26 +234,11 @@ app.post('/tier-4-requirements-and-conditions', function (req, res) {
   var responseObject = {};
 
   if (response == "Yes") {
-    readRulesBySection('Tier 4 (General) Student').then(function (results) {
-      var records = results.records.map(function (record) {
-        return record._fields[0];
-      });
-      var rules = records.map(function (record) {
-        return record.properties.desc;
-      });
-      rules.forEach(function (rule) {
-        var say = {
-          "say": rule
-        };
-        actions.push(say);
-      });
-      responseObject = {
-        "actions": actions
-      };
-      return res.json(responseObject);
-    })["finally"](function () {
-      return session.close();
-    });
+    responseObject = {
+      "actions": [{
+        "redirect": "task://purpose-of-route"
+      }]
+    };
   } else {
     responseObject = {
       "actions": [{
@@ -265,10 +250,18 @@ app.post('/tier-4-requirements-and-conditions', function (req, res) {
 });
 app.post('/tier-4-requirements-and-conditions/:paragraph', function (req, res) {
   var paragraph = req.params.paragraph;
+  var paragraphTitle = "dummy text";
+  var nextRoute = "dummy route";
   console.log(paragraph);
+
+  if (paragraph == 'purpose-of-route') {
+    paragraphTitle = 'Purpose of this route';
+    nextRoute = 'entry-clearance';
+  }
+
   var actions = [];
   var responseObject = {};
-  readRulesBySection('Tier 4 (General) Student').then(function (results) {
+  readRulesByParagraph(paragraph).then(function (results) {
     var records = results.records.map(function (record) {
       return record._fields[0];
     });
@@ -281,6 +274,10 @@ app.post('/tier-4-requirements-and-conditions/:paragraph', function (req, res) {
       };
       actions.push(say);
     });
+    var redirect = {
+      "redirect": "task://entry-clearance"
+    };
+    actions.push(redirect);
     responseObject = {
       "actions": actions
     };
@@ -288,7 +285,6 @@ app.post('/tier-4-requirements-and-conditions/:paragraph', function (req, res) {
   })["finally"](function () {
     return session.close();
   });
-  return res.json(responseObject);
 });
 app.listen(process.env.PORT, function () {
   return console.log("Example app listening at http://localhost:".concat(process.env.PORT));

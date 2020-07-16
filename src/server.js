@@ -312,27 +312,14 @@ app.post('/tier-4-requirements-and-conditions', (req, res) => {
     let responseObject = {}
 
     if(response == "Yes"){
-        
-        readRulesBySection('Tier 4 (General) Student')
-        .then(results => {
-                let records = results.records.map(record => record._fields[0])
-                let rules = records.map(record => record.properties.desc)
-    
-                rules.forEach(rule => {
-                    let say = {
-                        "say": rule
-                    }
-    
-                    actions.push(say)
-                })
 
-                responseObject = {
-                    "actions": actions
+        responseObject = {
+            "actions": [
+                {
+                    "redirect": "task://purpose-of-route"
                 }
-
-                return res.json(responseObject)
-            })
-            .finally(() => session.close());
+            ]
+        }
 
     } else {
         responseObject = {
@@ -350,14 +337,21 @@ app.post('/tier-4-requirements-and-conditions', (req, res) => {
 app.post('/tier-4-requirements-and-conditions/:paragraph', (req, res) => {
 
     let paragraph = req.params.paragraph
+    let paragraphTitle = "dummy text"
+    let nextRoute = "dummy route"
 
     console.log(paragraph)
+
+    if (paragraph == 'purpose-of-route'){
+        paragraphTitle = 'Purpose of this route'
+        nextRoute = 'entry-clearance'
+    }
 
     let actions = []
 
     let responseObject = {}
         
-    readRulesBySection('Tier 4 (General) Student')
+    readRulesByParagraph(paragraph)
     .then(results => {
             let records = results.records.map(record => record._fields[0])
             let rules = records.map(record => record.properties.desc)
@@ -370,6 +364,12 @@ app.post('/tier-4-requirements-and-conditions/:paragraph', (req, res) => {
                 actions.push(say)
             })
 
+            let redirect = {
+                "redirect": "task://entry-clearance"
+            }
+
+            actions.push(redirect)
+
             responseObject = {
                 "actions": actions
             }
@@ -377,9 +377,6 @@ app.post('/tier-4-requirements-and-conditions/:paragraph', (req, res) => {
             return res.json(responseObject)
         })
         .finally(() => session.close());
-
-
-        return res.json(responseObject)
 })
 
 app.listen(process.env.PORT, () => console.log(`Example app listening at http://localhost:${process.env.PORT}`))
