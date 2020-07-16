@@ -35,11 +35,11 @@ var readRulesBySection = function readRulesBySection(sectionTitle) {
   });
 };
 
-var readRulesByParagraph = function readRulesByParagraph(paragraphTitle) {
-  var query = "\n        MATCH (p:Paragraph {title: $paragraphTitle}), (r:Rule)\n        WHERE (p)-[:CONTAINS]->(r) \n        RETURN r";
+var readRulesByParagraph = function readRulesByParagraph(paragraphIndex) {
+  var query = "\n        MATCH (p:Paragraph {index: $paragraphIndex}), (r:Rule)\n        WHERE (p)-[:CONTAINS]->(r) \n        RETURN r";
   return session.readTransaction(function (tx) {
     return tx.run(query, {
-      paragraphTitle: paragraphTitle
+      paragraphIndex: paragraphIndex
     });
   });
 };
@@ -250,18 +250,33 @@ app.post('/tier-4-requirements-and-conditions', function (req, res) {
 });
 app.post('/tier-4-requirements-and-conditions/:paragraph', function (req, res) {
   var paragraph = req.params.paragraph;
-  var paragraphTitle = "dummy text";
+  var paragraphIndex = "dummy text";
   var nextRoute = "dummy route";
-  console.log(paragraph);
 
   if (paragraph == 'purpose-of-route') {
-    paragraphTitle = 'Purpose of this route';
+    paragraphIndex = '245ZT';
     nextRoute = 'entry-clearance';
+  } else if (paragraph == 'entry-clearance') {
+    paragraphIndex = '245ZU';
+    nextRoute = 'entry-clearance-requirements';
+  } else if (paragraph == 'entry-clearance-requirements') {
+    paragraphIndex = '245ZV';
+    nextRoute = 'entry-clearance-grant-period-and-conditions';
+  } else if (paragraph == 'entry-clearance-grant-period-and-conditions') {
+    paragraphIndex = '245ZW';
+    nextRoute = 'leave-to-remain-requirements';
+  } else if (paragraph == 'leave-to-remain-requirements') {
+    paragraphIndex = '245ZX';
+    nextRoute = 'leave-to-remain-grant-period-and-conditions';
+  } else if (paragraph == 'leave-to-remain-requirements') {
+    paragraphIndex = '245ZY';
+    nextRoute = 'goodbye';
   }
 
+  console.log(paragraphIndex);
   var actions = [];
   var responseObject = {};
-  readRulesByParagraph(paragraphTitle).then(function (results) {
+  readRulesByParagraph(paragraphIndex).then(function (results) {
     var records = results.records.map(function (record) {
       return record._fields[0];
     });
@@ -275,7 +290,7 @@ app.post('/tier-4-requirements-and-conditions/:paragraph', function (req, res) {
       actions.push(say);
     });
     var redirect = {
-      "redirect": "task://entry-clearance"
+      "redirect": "task://" + nextRoute
     };
     actions.push(redirect);
     responseObject = {

@@ -28,13 +28,13 @@ const readRulesBySection = (sectionTitle) => {
     return session.readTransaction(tx => tx.run(query, { sectionTitle }))
 }
 
-const readRulesByParagraph = (paragraphTitle) => {
+const readRulesByParagraph = (paragraphIndex) => {
     const query = `
-        MATCH (p:Paragraph {title: $paragraphTitle}), (r:Rule)
+        MATCH (p:Paragraph {index: $paragraphIndex}), (r:Rule)
         WHERE (p)-[:CONTAINS]->(r) 
         RETURN r`;
 
-    return session.readTransaction(tx => tx.run(query, { paragraphTitle }))
+    return session.readTransaction(tx => tx.run(query, { paragraphIndex }))
 }
 
 app.use(bodyParserJSON);
@@ -336,21 +336,36 @@ app.post('/tier-4-requirements-and-conditions', (req, res) => {
 app.post('/tier-4-requirements-and-conditions/:paragraph', (req, res) => {
 
     let paragraph = req.params.paragraph
-    let paragraphTitle = "dummy text"
+    let paragraphIndex = "dummy text"
     let nextRoute = "dummy route"
 
-    console.log(paragraph)
-
     if (paragraph == 'purpose-of-route'){
-        paragraphTitle = 'Purpose of this route'
+        paragraphIndex = '245ZT'
         nextRoute = 'entry-clearance'
+    } else if (paragraph == 'entry-clearance'){
+        paragraphIndex = '245ZU'
+        nextRoute = 'entry-clearance-requirements'
+    } else if (paragraph == 'entry-clearance-requirements'){
+        paragraphIndex = '245ZV'
+        nextRoute = 'entry-clearance-grant-period-and-conditions'
+    } else if (paragraph == 'entry-clearance-grant-period-and-conditions'){
+        paragraphIndex = '245ZW'
+        nextRoute = 'leave-to-remain-requirements'
+    } else if (paragraph == 'leave-to-remain-requirements'){
+        paragraphIndex = '245ZX'
+        nextRoute = 'leave-to-remain-grant-period-and-conditions'
+    } else if (paragraph == 'leave-to-remain-requirements'){
+        paragraphIndex = '245ZY'
+        nextRoute = 'goodbye'
     }
+
+    console.log(paragraphIndex)
 
     let actions = []
 
     let responseObject = {}
         
-    readRulesByParagraph(paragraphTitle)
+    readRulesByParagraph(paragraphIndex)
     .then(results => {
             let records = results.records.map(record => record._fields[0])
             let rules = records.map(record => record.properties.desc)
@@ -364,7 +379,7 @@ app.post('/tier-4-requirements-and-conditions/:paragraph', (req, res) => {
             })
 
             let redirect = {
-                "redirect": "task://entry-clearance"
+                "redirect": "task://" + nextRoute
             }
 
             actions.push(redirect)
