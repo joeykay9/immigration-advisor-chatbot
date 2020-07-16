@@ -282,9 +282,7 @@ app.post('/tier-4-requirements-and-conditions/:paragraph', function (req, res) {
       "actions": actions
     };
     return res.json(responseObject);
-  })["finally"](function () {
-    return session.close();
-  });
+  }); // .finally(() => session.close());
 });
 app.listen(process.env.PORT, function () {
   return console.log("Example app listening at http://localhost:".concat(process.env.PORT));

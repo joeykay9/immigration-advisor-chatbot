@@ -375,7 +375,7 @@ app.post('/tier-4-requirements-and-conditions/:paragraph', (req, res) => {
 
             return res.json(responseObject)
         })
-        .finally(() => session.close());
+        // .finally(() => session.close());
 })
 
 app.listen(process.env.PORT, () => console.log(`Example app listening at http://localhost:${process.env.PORT}`))
