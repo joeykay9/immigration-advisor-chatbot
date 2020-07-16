@@ -230,7 +230,6 @@ app.post('/age-response', function (req, res) {
 });
 app.post('/tier-4-requirements-and-conditions', function (req, res) {
   var response = req.body.Field_response_Value;
-  var actions = [];
   var responseObject = {};
 
   if (response == "Yes") {
@@ -239,6 +238,7 @@ app.post('/tier-4-requirements-and-conditions', function (req, res) {
         "redirect": "task://purpose-of-route"
       }]
     };
+    return res.json(responseObject);
   } else {
     responseObject = {
       "actions": [{

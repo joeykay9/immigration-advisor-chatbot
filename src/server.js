@@ -307,12 +307,9 @@ app.post('/tier-4-requirements-and-conditions', (req, res) => {
 
     let response = req.body.Field_response_Value
 
-    let actions = []
-
     let responseObject = {}
 
     if(response == "Yes"){
-
         responseObject = {
             "actions": [
                 {
@@ -320,6 +317,8 @@ app.post('/tier-4-requirements-and-conditions', (req, res) => {
                 }
             ]
         }
+
+        return res.json(responseObject)
 
     } else {
         responseObject = {
