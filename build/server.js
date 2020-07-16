@@ -281,6 +281,7 @@ app.post('/tier-4-requirements-and-conditions/:paragraph', function (req, res) {
     responseObject = {
       "actions": actions
     };
+    console.log(responseObject);
     return res.json(responseObject);
   }); // .finally(() => session.close());
 });
