@@ -296,16 +296,15 @@ app.post('/tier-4-requirements-and-conditions/:paragraph', function (req, res) {
     responseObject = {
       "actions": actions
     };
-    console.log(responseObject);
-    return res.json(responseObject);
-  })["finally"](function () {
     responseObject = {
       "actions": [{
         "redirect": "task://goodbye"
       }]
     };
-    session.close();
+    console.log(responseObject);
     return res.json(responseObject);
+  })["finally"](function () {
+    session.close();
   });
 });
 app.listen(process.env.PORT, function () {

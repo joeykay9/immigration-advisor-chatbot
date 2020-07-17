@@ -388,11 +388,6 @@ app.post('/tier-4-requirements-and-conditions/:paragraph', (req, res) => {
                 "actions": actions
             }
 
-            console.log(responseObject)
-
-            return res.json(responseObject)
-        })
-        .finally(() => {
             responseObject = {
                 "actions": [
                     {
@@ -400,10 +395,13 @@ app.post('/tier-4-requirements-and-conditions/:paragraph', (req, res) => {
                     }
                 ]
             }
-            
-            session.close()
+
+            console.log(responseObject)
 
             return res.json(responseObject)
+        })
+        .finally(() => {
+            session.close()
         });
 })
 
