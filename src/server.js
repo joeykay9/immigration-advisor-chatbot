@@ -365,7 +365,7 @@ app.post('/tier-4-requirements-and-conditions/:paragraph', (req, res) => {
 
     let responseObject = {}
         
-    return readRulesByParagraph(paragraphIndex)
+    readRulesByParagraph(paragraphIndex)
     .then(results => {
             let records = results.records.map(record => record._fields[0])
             let rules = records.map(record => record.properties.desc)
@@ -388,21 +388,23 @@ app.post('/tier-4-requirements-and-conditions/:paragraph', (req, res) => {
                 "actions": actions
             }
 
-            responseObject = {
-                "actions": [
-                    {
-                        "redirect": "task://goodbye"
-                    }
-                ]
-            }
-
             console.log(responseObject)
 
-            return res.json(responseObject)
+            // return res.json(responseObject)
         })
         .finally(() => {
             session.close()
         });
+
+        responseObject = {
+            "actions": [
+                {
+                    "redirect": "task://goodbye"
+                }
+            ]
+        }
+
+        return res.json(responseObject)
 })
 
 app.listen(process.env.PORT, () => console.log(`Example app listening at http://localhost:${process.env.PORT}`))

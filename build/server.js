@@ -276,7 +276,7 @@ app.post('/tier-4-requirements-and-conditions/:paragraph', function (req, res) {
   console.log(paragraphIndex);
   var actions = [];
   var responseObject = {};
-  return readRulesByParagraph(paragraphIndex).then(function (results) {
+  readRulesByParagraph(paragraphIndex).then(function (results) {
     var records = results.records.map(function (record) {
       return record._fields[0];
     });
@@ -296,16 +296,16 @@ app.post('/tier-4-requirements-and-conditions/:paragraph', function (req, res) {
     responseObject = {
       "actions": actions
     };
-    responseObject = {
-      "actions": [{
-        "redirect": "task://goodbye"
-      }]
-    };
-    console.log(responseObject);
-    return res.json(responseObject);
+    console.log(responseObject); // return res.json(responseObject)
   })["finally"](function () {
     session.close();
   });
+  responseObject = {
+    "actions": [{
+      "redirect": "task://goodbye"
+    }]
+  };
+  return res.json(responseObject);
 });
 app.listen(process.env.PORT, function () {
   return console.log("Example app listening at http://localhost:".concat(process.env.PORT));
