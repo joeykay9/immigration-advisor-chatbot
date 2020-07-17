@@ -248,7 +248,7 @@ app.post('/tier-4-requirements-and-conditions', function (req, res) {
     return res.json(responseObject);
   }
 });
-app.get('/tier-4-requirements-and-conditions/:paragraph', function (req, res) {
+app.post('/tier-4-requirements-and-conditions/:paragraph', function (req, res) {
   var paragraph = req.params.paragraph;
   var paragraphIndex = "dummy text";
   var nextRoute = "dummy route";

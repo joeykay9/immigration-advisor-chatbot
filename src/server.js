@@ -333,7 +333,7 @@ app.post('/tier-4-requirements-and-conditions', (req, res) => {
     }
 })
 
-app.get('/tier-4-requirements-and-conditions/:paragraph', (req, res) => {
+app.post('/tier-4-requirements-and-conditions/:paragraph', (req, res) => {
 
     let paragraph = req.params.paragraph
     let paragraphIndex = "dummy text"
