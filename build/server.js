@@ -276,7 +276,7 @@ app.get('/tier-4-requirements-and-conditions/:paragraph', function (req, res) {
   console.log(paragraphIndex);
   var actions = [];
   var responseObject = {};
-  readRulesByParagraph(paragraphIndex).then(function (results) {
+  return readRulesByParagraph(paragraphIndex).then(function (results) {
     var records = results.records.map(function (record) {
       return record._fields[0];
     });
