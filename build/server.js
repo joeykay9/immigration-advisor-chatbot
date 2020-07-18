@@ -297,9 +297,8 @@ app.post('/tier-4-requirements-and-conditions/:paragraph', function (req, res) {
       "actions": actions
     };
     console.log(responseObject); // return res.json(responseObject)
-  })["finally"](function () {
-    session.close();
-  });
+  }); // .finally(() => session.close()); 
+
   responseObject = {
     "actions": [{
       "redirect": "task://goodbye"

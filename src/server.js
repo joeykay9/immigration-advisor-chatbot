@@ -392,9 +392,7 @@ app.post('/tier-4-requirements-and-conditions/:paragraph', (req, res) => {
 
             // return res.json(responseObject)
         })
-        .finally(() => {
-            session.close()
-        });
+        // .finally(() => session.close()); 
 
         responseObject = {
             "actions": [
