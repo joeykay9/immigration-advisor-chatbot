@@ -382,7 +382,7 @@ app.post('/tier-4/paragraphs/:paragraph', (req, res) => {
             //     "redirect": "task://" + nextRoute
             // }
 
-            actions.push(redirect)
+            // actions.push(redirect)
 
             responseObject = {
                 "actions": actions

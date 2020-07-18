@@ -291,8 +291,8 @@ app.post('/tier-4/paragraphs/:paragraph', function (req, res) {
     }); // let redirect = {
     //     "redirect": "task://" + nextRoute
     // }
+    // actions.push(redirect)
 
-    actions.push(redirect);
     responseObject = {
       "actions": actions
     };
