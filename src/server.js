@@ -333,76 +333,76 @@ app.post('/tier-4-requirements-and-conditions', (req, res) => {
     }
 })
 
-app.post('/tier-4-requirements-and-conditions/:paragraph', (req, res) => {
+// app.post('/tier-4-requirements-and-conditions/:paragraph', (req, res) => {
 
-    let paragraph = req.params.paragraph
-    let paragraphIndex = "dummy text"
-    let nextRoute = "dummy route"
+//     let paragraph = req.params.paragraph
+//     let paragraphIndex = "dummy text"
+//     let nextRoute = "dummy route"
 
-    if (paragraph == 'purpose-of-route'){
-        paragraphIndex = '245ZT'
-        nextRoute = 'entry-clearance'
-    } else if (paragraph == 'entry-clearance'){
-        paragraphIndex = '245ZU'
-        nextRoute = 'entry-clearance-requirements'
-    } else if (paragraph == 'entry-clearance-requirements'){
-        paragraphIndex = '245ZV'
-        nextRoute = 'entry-clearance-grant-period-and-conditions'
-    } else if (paragraph == 'entry-clearance-grant-period-and-conditions'){
-        paragraphIndex = '245ZW'
-        nextRoute = 'leave-to-remain-requirements'
-    } else if (paragraph == 'leave-to-remain-requirements'){
-        paragraphIndex = '245ZX'
-        nextRoute = 'leave-to-remain-grant-period-and-conditions'
-    } else if (paragraph == 'leave-to-remain-requirements'){
-        paragraphIndex = '245ZY'
-        nextRoute = 'goodbye'
-    }
+//     if (paragraph == 'purpose-of-route'){
+//         paragraphIndex = '245ZT'
+//         nextRoute = 'entry-clearance'
+//     } else if (paragraph == 'entry-clearance'){
+//         paragraphIndex = '245ZU'
+//         nextRoute = 'entry-clearance-requirements'
+//     } else if (paragraph == 'entry-clearance-requirements'){
+//         paragraphIndex = '245ZV'
+//         nextRoute = 'entry-clearance-grant-period-and-conditions'
+//     } else if (paragraph == 'entry-clearance-grant-period-and-conditions'){
+//         paragraphIndex = '245ZW'
+//         nextRoute = 'leave-to-remain-requirements'
+//     } else if (paragraph == 'leave-to-remain-requirements'){
+//         paragraphIndex = '245ZX'
+//         nextRoute = 'leave-to-remain-grant-period-and-conditions'
+//     } else if (paragraph == 'leave-to-remain-requirements'){
+//         paragraphIndex = '245ZY'
+//         nextRoute = 'goodbye'
+//     }
 
-    console.log(paragraphIndex)
+//     console.log(paragraphIndex)
 
-    let actions = []
+//     let actions = []
 
-    let responseObject = {}
+//     let responseObject = {}
         
-    readRulesByParagraph(paragraphIndex)
-    .then(results => {
-            let records = results.records.map(record => record._fields[0])
-            let rules = records.map(record => record.properties.desc)
+//     readRulesByParagraph(paragraphIndex)
+//     .then(results => {
+//             let records = results.records.map(record => record._fields[0])
+//             let rules = records.map(record => record.properties.desc)
 
-            rules.forEach(rule => {
-                let say = {
-                    "say": rule
-                }
+//             rules.forEach(rule => {
+//                 let say = {
+//                     "say": rule
+//                 }
 
-                actions.push(say)
-            })
+//                 actions.push(say)
+//             })
 
-            let redirect = {
-                "redirect": "task://" + nextRoute
-            }
+//             let redirect = {
+//                 "redirect": "task://" + nextRoute
+//             }
 
-            actions.push(redirect)
+//             actions.push(redirect)
 
-            responseObject = {
-                "actions": actions
-            }
+//             responseObject = {
+//                 "actions": actions
+//             }
 
-            console.log(responseObject)
+//             console.log(responseObject)
 
-            // return res.json(responseObject)
-        })
-        // .finally(() => session.close()); 
+//             // return res.json(responseObject)
+//         })
+//         // .finally(() => session.close()); 
 
-        responseObject = {
-            "actions": [
-                {
-                    "redirect": "task://goodbye"
-                }
-            ]
-        }
+//         responseObject = {
+//             "actions": [
+//                 {
+//                     "redirect": "task://goodbye"
+//                 }
+//             ]
+//         }
 
-        return res.json(responseObject)
-})
+//         return res.json(responseObject)
+// })
 
 app.listen(process.env.PORT, () => console.log(`Example app listening at http://localhost:${process.env.PORT}`))
