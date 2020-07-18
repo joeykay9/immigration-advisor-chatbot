@@ -288,11 +288,11 @@ app.post('/tier-4/paragraphs/:paragraph', function (req, res) {
         "say": rule
       };
       actions.push(say);
-    }); // let redirect = {
-    //     "redirect": "task://" + nextRoute
-    // }
-    // actions.push(redirect)
-
+    });
+    var redirect = {
+      "redirect": "task://" + nextRoute
+    };
+    actions.push(redirect);
     responseObject = {
       "actions": actions
     };
