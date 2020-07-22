@@ -27,7 +27,7 @@ var driver = _neo4jDriver["default"].driver(process.env.AURA_ENDPOINT, _neo4jDri
 var session = driver.session();
 
 var readRulesBySection = function readRulesBySection(sectionTitle) {
-  var query = "\n        MATCH (s:Section {title: $sectionTitle}), (p:Paragraph), (r:Rule)\n        WHERE (s)-[:CONTAINS]->(p) AND (p)-[:CONTAINS]->(r) \n        RETURN r";
+  var query = "\n        MATCH (s:Section {title: $sectionTitle}), (p:Paragraph), (r:Rule)\n        WHERE (s)-[:CONTAINS]->(p) AND (p)-[:CONTAINS]->(r) \n        RETURN r\n        ORDER BY r.index";
   return session.readTransaction(function (tx) {
     return tx.run(query, {
       sectionTitle: sectionTitle
@@ -36,7 +36,7 @@ var readRulesBySection = function readRulesBySection(sectionTitle) {
 };
 
 var readRulesByParagraph = function readRulesByParagraph(paragraphIndex) {
-  var query = "\n        MATCH (p:Paragraph {index: $paragraphIndex}), (r:Rule)\n        WHERE (p)-[:CONTAINS]->(r) \n        RETURN r";
+  var query = "\n        MATCH (p:Paragraph {index: $paragraphIndex}), (r:Rule)\n        WHERE (p)-[:CONTAINS]->(r) \n        RETURN r\n        ORDER BY r.index";
   return session.readTransaction(function (tx) {
     return tx.run(query, {
       paragraphIndex: paragraphIndex

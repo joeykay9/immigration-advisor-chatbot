@@ -23,7 +23,8 @@ const readRulesBySection = (sectionTitle) => {
     const query = `
         MATCH (s:Section {title: $sectionTitle}), (p:Paragraph), (r:Rule)
         WHERE (s)-[:CONTAINS]->(p) AND (p)-[:CONTAINS]->(r) 
-        RETURN r`;
+        RETURN r
+        ORDER BY r.index`;
 
     return session.readTransaction(tx => tx.run(query, { sectionTitle }))
 }
@@ -32,7 +33,8 @@ const readRulesByParagraph = (paragraphIndex) => {
     const query = `
         MATCH (p:Paragraph {index: $paragraphIndex}), (r:Rule)
         WHERE (p)-[:CONTAINS]->(r) 
-        RETURN r`;
+        RETURN r
+        ORDER BY r.index`;
 
     return session.readTransaction(tx => tx.run(query, { paragraphIndex }))
 }
