@@ -340,7 +340,8 @@ app.post('/tier-4/paragraphs/:paragraph', (req, res) => {
     let nextRoute = "dummy route"
 
     if (paragraph == 'purpose-of-route'){
-        paragraphIndex = '245ZT'
+        // paragraphIndex = '245ZT'
+        paragraphIndex = '245ZV'
         nextRoute = 'entry-clearance'
     } else if (paragraph == 'entry-clearance'){
         paragraphIndex = '245ZU'
