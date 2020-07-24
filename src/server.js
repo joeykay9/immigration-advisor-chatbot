@@ -278,12 +278,12 @@ app.post('/age-response', (req, res) => {
                     }
                 },
                 {
-                    "say": "Do you want to know the requirements and conditions for a successful Tier 4 (General) Student visa application under the Point Based System?"
+                    "say": "Are you currently in the UK?"
                 },
                 {
                     "listen": {
                         tasks: [
-                            "tier-4-requirements-and-conditions",
+                            "respond_to_current_location",
                         ]
                     }
                 },
@@ -298,6 +298,61 @@ app.post('/age-response', (req, res) => {
                 {
                     "redirect": "task://goodbye"
                 }
+            ]
+        }
+    }
+    
+    return res.json(responseObject)
+})
+
+app.post('/current-location-response', (req, res) => {
+
+    console.log(req.body)
+
+    let response = req.body.Field_response_Value
+
+    console.log(response)
+
+    let responseObject = {}
+
+    if(response == "Yes") {
+        responseObject = {
+            "actions": [
+                {
+                    "remember": {
+                        "visa_type": "Entry clearance" //to be used to query the database
+                    }
+                },
+                {
+                    "say": "Do you want to know the requirements and conditions under the Point Based System for a successful Tier 4 (General) Student visa application to enter the UK?"
+                },
+                {
+                    "listen": {
+                        tasks: [
+                            "tier-4-requirements-and-conditions",
+                        ]
+                    }
+                },
+            ]
+        }
+    } else {
+        responseObject = {
+            "actions": [
+                {
+                    "remember": {
+                        "visa_type": "Leave to remain" //to be used to query the database
+                    }
+                },
+                {
+                    "say": "Do you want to know the requirements and conditions under the Point Based System for a successful Tier 4 (General) Student visa application to remain in the UK?"
+                },
+                {
+                    "listen": {
+                        tasks: [
+                            "tier-4-requirements-and-conditions",
+                        ]
+                    }
+                },
             ]
         }
     }
