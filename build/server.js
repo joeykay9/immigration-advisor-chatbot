@@ -209,10 +209,10 @@ app.post('/age-response', function (req, res) {
 
         }
       }, {
-        "say": "Do you want to know the requirements and conditions for a successful Tier 4 (General) Student visa application under the Point Based System?"
+        "say": "Are you currently in the UK?"
       }, {
         "listen": {
-          tasks: ["tier-4-requirements-and-conditions"]
+          tasks: ["respond_to_current_location"]
         }
       }]
     };
@@ -222,6 +222,46 @@ app.post('/age-response', function (req, res) {
         "say": "You will need to apply for the Tier 4 (Child) Student visa."
       }, {
         "redirect": "task://goodbye"
+      }]
+    };
+  }
+
+  return res.json(responseObject);
+});
+app.post('/current-location-response', function (req, res) {
+  console.log(req.body);
+  var response = req.body.Field_response_Value;
+  console.log(response);
+  var responseObject = {};
+
+  if (response == "Yes") {
+    responseObject = {
+      "actions": [{
+        "remember": {
+          "visa_type": "Entry clearance" //to be used to query the database
+
+        }
+      }, {
+        "say": "Do you want to know the requirements and conditions under the Point Based System for a successful Tier 4 (General) Student visa application to enter the UK?"
+      }, {
+        "listen": {
+          tasks: ["tier-4-requirements-and-conditions"]
+        }
+      }]
+    };
+  } else {
+    responseObject = {
+      "actions": [{
+        "remember": {
+          "visa_type": "Leave to remain" //to be used to query the database
+
+        }
+      }, {
+        "say": "Do you want to know the requirements and conditions under the Point Based System for a successful Tier 4 (General) Student visa application to remain in the UK?"
+      }, {
+        "listen": {
+          tasks: ["tier-4-requirements-and-conditions"]
+        }
       }]
     };
   }
@@ -249,30 +289,32 @@ app.post('/tier-4-requirements-and-conditions', function (req, res) {
   }
 });
 app.post('/tier-4/paragraphs/:paragraph', function (req, res) {
+  var visa_type = JSON.parse(req.body.Memory).visa_type;
   var paragraph = req.params.paragraph;
-  var paragraphIndex = "dummy text";
-  var nextRoute = "dummy route";
+  var paragraphIndex = "";
+  var nextRoute = "";
 
   if (paragraph == 'purpose-of-route') {
-    // paragraphIndex = '245ZT'
-    paragraphIndex = '245ZV';
-    nextRoute = 'entry-clearance';
-  } else if (paragraph == 'entry-clearance') {
-    paragraphIndex = '245ZU';
-    nextRoute = 'entry-clearance-requirements';
-  } else if (paragraph == 'entry-clearance-requirements') {
-    paragraphIndex = '245ZV';
-    nextRoute = 'entry-clearance-grant-period-and-conditions';
-  } else if (paragraph == 'entry-clearance-grant-period-and-conditions') {
-    paragraphIndex = '245ZW';
-    nextRoute = 'leave-to-remain-requirements';
-  } else if (paragraph == 'leave-to-remain-requirements') {
-    paragraphIndex = '245ZX';
-    nextRoute = 'leave-to-remain-grant-period-and-conditions';
-  } else if (paragraph == 'leave-to-remain-requirements') {
-    paragraphIndex = '245ZY';
-    nextRoute = 'goodbye';
-  }
+    paragraphIndex = '245ZT';
+    if (visa_type == 'Entry clearance') nextRoute = 'leave-to-remain-requirements';else if (visa_type == 'Leave to remain') nextRoute = 'entry-clearance';
+  } //entry clearance path
+  else if (paragraph == 'entry-clearance') {
+      paragraphIndex = '245ZU';
+      nextRoute = 'entry-clearance-requirements';
+    } else if (paragraph == 'entry-clearance-requirements') {
+      paragraphIndex = '245ZV';
+      nextRoute = 'entry-clearance-grant-period-and-conditions';
+    } else if (paragraph == 'entry-clearance-grant-period-and-conditions') {
+      paragraphIndex = '245ZW';
+      nextRoute = 'goodbye';
+    } //Leave to remain path
+    else if (paragraph == 'leave-to-remain-requirements') {
+        paragraphIndex = '245ZX';
+        nextRoute = 'leave-to-remain-grant-period-and-conditions';
+      } else if (paragraph == 'leave-to-remain-requirements') {
+        paragraphIndex = '245ZY';
+        nextRoute = 'goodbye';
+      }
 
   console.log(paragraphIndex);
   var actions = [];
@@ -299,15 +341,7 @@ app.post('/tier-4/paragraphs/:paragraph', function (req, res) {
     };
     console.log(responseObject);
     return res.json(responseObject);
-  }); // .finally(() => session.close()); 
-  // responseObject = {
-  //     "actions": [
-  //         {
-  //             "redirect": "task://goodbye"
-  //         }
-  //     ]
-  // }
-  // return res.json(responseObject)
+  }); // .finally(() => session.close());
 });
 app.listen(process.env.PORT, function () {
   return console.log("Example app listening at http://localhost:".concat(process.env.PORT));

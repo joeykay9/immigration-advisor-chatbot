@@ -392,15 +392,21 @@ app.post('/tier-4-requirements-and-conditions', (req, res) => {
 
 app.post('/tier-4/paragraphs/:paragraph', (req, res) => {
 
+    let visa_type = JSON.parse(req.body.Memory).visa_type
+
     let paragraph = req.params.paragraph
-    let paragraphIndex = "dummy text"
-    let nextRoute = "dummy route"
+    let paragraphIndex = ""
+    let nextRoute = ""
 
     if (paragraph == 'purpose-of-route'){
-        // paragraphIndex = '245ZT'
-        paragraphIndex = '245ZV'
-        nextRoute = 'entry-clearance'
-    } else if (paragraph == 'entry-clearance'){
+        paragraphIndex = '245ZT'
+        if(visa_type == 'Entry clearance')
+            nextRoute = 'leave-to-remain-requirements'
+        else if(visa_type == 'Leave to remain')
+            nextRoute = 'entry-clearance'
+    } 
+    //entry clearance path
+    else if (paragraph == 'entry-clearance'){
         paragraphIndex = '245ZU'
         nextRoute = 'entry-clearance-requirements'
     } else if (paragraph == 'entry-clearance-requirements'){
@@ -408,8 +414,10 @@ app.post('/tier-4/paragraphs/:paragraph', (req, res) => {
         nextRoute = 'entry-clearance-grant-period-and-conditions'
     } else if (paragraph == 'entry-clearance-grant-period-and-conditions'){
         paragraphIndex = '245ZW'
-        nextRoute = 'leave-to-remain-requirements'
-    } else if (paragraph == 'leave-to-remain-requirements'){
+        nextRoute = 'goodbye'
+    } 
+    //Leave to remain path
+    else if (paragraph == 'leave-to-remain-requirements'){
         paragraphIndex = '245ZX'
         nextRoute = 'leave-to-remain-grant-period-and-conditions'
     } else if (paragraph == 'leave-to-remain-requirements'){
@@ -450,17 +458,7 @@ app.post('/tier-4/paragraphs/:paragraph', (req, res) => {
 
             return res.json(responseObject)
         })
-        // .finally(() => session.close()); 
-
-        // responseObject = {
-        //     "actions": [
-        //         {
-        //             "redirect": "task://goodbye"
-        //         }
-        //     ]
-        // }
-
-        // return res.json(responseObject)
+        // .finally(() => session.close());
 })
 
 app.listen(process.env.PORT, () => console.log(`Example app listening at http://localhost:${process.env.PORT}`))
