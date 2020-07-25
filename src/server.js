@@ -324,7 +324,7 @@ app.post('/current-location-response', (req, res) => {
                     }
                 },
                 {
-                    "say": "Do you want to know the requirements and conditions under the Point Based System for a successful Tier 4 (General) Student visa application to enter the UK?"
+                    "say": "Do you want to know the requirements and conditions under the Point Based System for a successful Tier 4 (General) Student visa application to remain in the UK??"
                 },
                 {
                     "listen": {
@@ -344,7 +344,7 @@ app.post('/current-location-response', (req, res) => {
                     }
                 },
                 {
-                    "say": "Do you want to know the requirements and conditions under the Point Based System for a successful Tier 4 (General) Student visa application to remain in the UK?"
+                    "say": "Do you want to know the requirements and conditions under the Point Based System for a successful Tier 4 (General) Student visa application to enter the UK?"
                 },
                 {
                     "listen": {
