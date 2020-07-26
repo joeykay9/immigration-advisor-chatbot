@@ -29,12 +29,22 @@ const readRulesBySection = (sectionTitle) => {
     return session.readTransaction(tx => tx.run(query, { sectionTitle }))
 }
 
-const readRulesByParagraph = (paragraphIndex) => {
+const readRulesByParagraph = (paragraphIndex, limit) => {
     const query = `
         MATCH (p:Paragraph {index: $paragraphIndex}), (r:Rule)
         WHERE (p)-[:CONTAINS]->(r) 
         RETURN r
-        ORDER BY r.index`;
+        ORDER BY r.index LIMIT $limit`;
+
+    return session.readTransaction(tx => tx.run(query, { paragraphIndex, limit }))
+}
+
+const readRequirementsByType = (paragraphIndex) => {
+    const query = `
+        MATCH (p:Paragraph {index: $paragraphIndex}), (r:Rule {desc: 'Requirements:'}), (s:SubRule)
+        WHERE (p)-[:CONTAINS]->(r) AND (r)-[:CONTAINS]->(s)
+        RETURN r, s
+        ORDER BY r, s.index`;
 
     return session.readTransaction(tx => tx.run(query, { paragraphIndex }))
 }
@@ -397,20 +407,22 @@ app.post('/tier-4/paragraphs/:paragraph', (req, res) => {
     let paragraph = req.params.paragraph
     let paragraphIndex = ""
     let nextRoute = ""
+    let limit = 100
 
     if (paragraph == 'purpose-of-route'){
         paragraphIndex = '245ZT'
         if(visa_type == 'Entry clearance')
-            nextRoute = 'leave-to-remain-requirements'
-        else if(visa_type == 'Leave to remain')
             nextRoute = 'entry-clearance'
+        else if(visa_type == 'Leave to remain')
+            nextRoute = 'leave-to-remain-requirements'
     } 
     //entry clearance path
     else if (paragraph == 'entry-clearance'){
         paragraphIndex = '245ZU'
-        nextRoute = 'entry-clearance-requirements'
-    } else if (paragraph == 'entry-clearance-requirements'){
+        nextRoute = 'entry-clearance-requirements-intro'
+    } else if (paragraph == 'entry-clearance-requirements-intro'){
         paragraphIndex = '245ZV'
+        limit = 1
         nextRoute = 'entry-clearance-grant-period-and-conditions'
     } else if (paragraph == 'entry-clearance-grant-period-and-conditions'){
         paragraphIndex = '245ZW'
@@ -431,7 +443,7 @@ app.post('/tier-4/paragraphs/:paragraph', (req, res) => {
 
     let responseObject = {}
         
-    readRulesByParagraph(paragraphIndex)
+    readRulesByParagraph(paragraphIndex, limit)
     .then(results => {
             let records = results.records.map(record => record._fields[0])
             let rules = records.map(record => record.properties.desc)
@@ -443,6 +455,20 @@ app.post('/tier-4/paragraphs/:paragraph', (req, res) => {
 
                 actions.push(say)
             })
+
+            if(paragraph == 'entry-clearance-requirements-intro'){
+                let say = {
+                    "say": 'Do you wish to know the requirements?'
+                }
+
+                let listen = {
+                    "listen": {
+                        tasks: [
+                            "entry-clearance-requirements",
+                        ]
+                    }
+                }
+            }
 
             // let redirect = {
             //     "redirect": "task://" + nextRoute
@@ -459,6 +485,61 @@ app.post('/tier-4/paragraphs/:paragraph', (req, res) => {
             return res.json(responseObject)
         })
         // .finally(() => session.close());
+})
+
+app.post('/tier-4/requirements/:type', (req, res) => {
+
+    let type = req.params.type
+    let response = req.body.Field_response_Value
+    let paragraphIndex = ""
+    let responseObject = {}
+    let actions = []
+
+    if(type=="entry-clearance"){
+        paragraphIndex="245ZV"
+    } else if(type="leave-to-remain"){
+        paragraphIndex="245ZX"
+    }
+
+    if(response == "Yes"){
+        readRequirementsByType(paragraphIndex)
+        .then(results => {
+            let subRuleRecords = results.records.map(record => record._fields[1])
+            let rule = results.records[0]._fields[0].properties.desc
+            let subRules = subRuleRecords.map(record => record.properties.desc)
+
+            let say = {
+                "say": rule
+            }
+
+            actions.push(say)
+
+            subRules.forEach(subRule => {
+                say = {
+                    "say": subRule
+                }
+
+                actions.push(say)
+            })
+
+            responseObject = {
+                "actions": actions
+            }
+
+            return res.json(responseObject)
+        })
+
+    } else {
+        responseObject = {
+            "actions": [
+                {
+                    "redirect": "task://goodbye"
+                }
+            ]
+        }
+
+        return res.json(responseObject)
+    }
 })
 
 app.listen(process.env.PORT, () => console.log(`Example app listening at http://localhost:${process.env.PORT}`))

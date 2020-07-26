@@ -35,8 +35,18 @@ var readRulesBySection = function readRulesBySection(sectionTitle) {
   });
 };
 
-var readRulesByParagraph = function readRulesByParagraph(paragraphIndex) {
-  var query = "\n        MATCH (p:Paragraph {index: $paragraphIndex}), (r:Rule)\n        WHERE (p)-[:CONTAINS]->(r) \n        RETURN r\n        ORDER BY r.index";
+var readRulesByParagraph = function readRulesByParagraph(paragraphIndex, limit) {
+  var query = "\n        MATCH (p:Paragraph {index: $paragraphIndex}), (r:Rule)\n        WHERE (p)-[:CONTAINS]->(r) \n        RETURN r\n        ORDER BY r.index LIMIT $limit";
+  return session.readTransaction(function (tx) {
+    return tx.run(query, {
+      paragraphIndex: paragraphIndex,
+      limit: limit
+    });
+  });
+};
+
+var readRequirementsByType = function readRequirementsByType(paragraphIndex) {
+  var query = "\n        MATCH (p:Paragraph {index: $paragraphIndex}), (r:Rule {desc: 'Requirements:'}), (s:SubRule)\n        WHERE (p)-[:CONTAINS]->(r) AND (r)-[:CONTAINS]->(s)\n        RETURN r, s\n        ORDER BY r, s.index";
   return session.readTransaction(function (tx) {
     return tx.run(query, {
       paragraphIndex: paragraphIndex
@@ -293,16 +303,18 @@ app.post('/tier-4/paragraphs/:paragraph', function (req, res) {
   var paragraph = req.params.paragraph;
   var paragraphIndex = "";
   var nextRoute = "";
+  var limit = 100;
 
   if (paragraph == 'purpose-of-route') {
     paragraphIndex = '245ZT';
-    if (visa_type == 'Entry clearance') nextRoute = 'leave-to-remain-requirements';else if (visa_type == 'Leave to remain') nextRoute = 'entry-clearance';
+    if (visa_type == 'Entry clearance') nextRoute = 'entry-clearance';else if (visa_type == 'Leave to remain') nextRoute = 'leave-to-remain-requirements';
   } //entry clearance path
   else if (paragraph == 'entry-clearance') {
       paragraphIndex = '245ZU';
-      nextRoute = 'entry-clearance-requirements';
-    } else if (paragraph == 'entry-clearance-requirements') {
+      nextRoute = 'entry-clearance-requirements-intro';
+    } else if (paragraph == 'entry-clearance-requirements-intro') {
       paragraphIndex = '245ZV';
+      limit = 1;
       nextRoute = 'entry-clearance-grant-period-and-conditions';
     } else if (paragraph == 'entry-clearance-grant-period-and-conditions') {
       paragraphIndex = '245ZW';
@@ -319,7 +331,7 @@ app.post('/tier-4/paragraphs/:paragraph', function (req, res) {
   console.log(paragraphIndex);
   var actions = [];
   var responseObject = {};
-  readRulesByParagraph(paragraphIndex).then(function (results) {
+  readRulesByParagraph(paragraphIndex, limit).then(function (results) {
     var records = results.records.map(function (record) {
       return record._fields[0];
     });
@@ -331,10 +343,22 @@ app.post('/tier-4/paragraphs/:paragraph', function (req, res) {
         "say": rule
       };
       actions.push(say);
-    }); // let redirect = {
+    });
+
+    if (paragraph == 'entry-clearance-requirements-intro') {
+      var say = {
+        "say": 'Do you wish to know the requirements?'
+      };
+      var listen = {
+        "listen": {
+          tasks: ["entry-clearance-requirements"]
+        }
+      };
+    } // let redirect = {
     //     "redirect": "task://" + nextRoute
     // }
     // actions.push(redirect)
+
 
     responseObject = {
       "actions": actions
@@ -342,6 +366,52 @@ app.post('/tier-4/paragraphs/:paragraph', function (req, res) {
     console.log(responseObject);
     return res.json(responseObject);
   }); // .finally(() => session.close());
+});
+app.post('/tier-4/requirements/:type', function (req, res) {
+  var type = req.params.type;
+  var response = req.body.Field_response_Value;
+  var paragraphIndex = "";
+  var responseObject = {};
+  var actions = [];
+
+  if (type == "entry-clearance") {
+    paragraphIndex = "245ZV";
+  } else if (type = "leave-to-remain") {
+    paragraphIndex = "245ZX";
+  }
+
+  if (response == "Yes") {
+    readRequirementsByType(paragraphIndex).then(function (results) {
+      var subRuleRecords = results.records.map(function (record) {
+        return record._fields[1];
+      });
+      var rule = results.records[0]._fields[0].properties.desc;
+      var subRules = subRuleRecords.map(function (record) {
+        return record.properties.desc;
+      });
+      var say = {
+        "say": rule
+      };
+      actions.push(say);
+      subRules.forEach(function (subRule) {
+        say = {
+          "say": subRule
+        };
+        actions.push(say);
+      });
+      responseObject = {
+        "actions": actions
+      };
+      return res.json(responseObject);
+    });
+  } else {
+    responseObject = {
+      "actions": [{
+        "redirect": "task://goodbye"
+      }]
+    };
+    return res.json(responseObject);
+  }
 });
 app.listen(process.env.PORT, function () {
   return console.log("Example app listening at http://localhost:".concat(process.env.PORT));
