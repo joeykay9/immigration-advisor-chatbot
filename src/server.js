@@ -461,6 +461,8 @@ app.post('/tier-4/paragraphs/:paragraph', (req, res) => {
                     "say": 'Do you wish to know the requirements?'
                 }
 
+                actions.push(say)
+
                 let listen = {
                     "listen": {
                         tasks: [
@@ -468,6 +470,8 @@ app.post('/tier-4/paragraphs/:paragraph', (req, res) => {
                         ]
                     }
                 }
+
+                actions.push(listen)
             }
 
             // let redirect = {

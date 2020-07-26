@@ -349,11 +349,13 @@ app.post('/tier-4/paragraphs/:paragraph', function (req, res) {
       var say = {
         "say": 'Do you wish to know the requirements?'
       };
+      actions.push(say);
       var listen = {
         "listen": {
           tasks: ["entry-clearance-requirements"]
         }
       };
+      actions.push(listen);
     } // let redirect = {
     //     "redirect": "task://" + nextRoute
     // }
