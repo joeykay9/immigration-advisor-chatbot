@@ -8,7 +8,7 @@ var _express = _interopRequireDefault(require("express"));
 
 var _bodyParser = _interopRequireDefault(require("body-parser"));
 
-var _neo4jDriver = _interopRequireDefault(require("neo4j-driver"));
+var _database = _interopRequireDefault(require("./database"));
 
 _dotenv["default"].config();
 
@@ -18,17 +18,19 @@ var bodyParserJSON = _bodyParser["default"].json();
 
 var bodyParserURLEncoded = _bodyParser["default"].urlencoded({
   extended: true
-});
+}); // const driver = neo4j.driver(
+//     process.env.AURA_ENDPOINT, 
+//     neo4j.auth.basic(process.env.AURA_USERNAME, process.env.AURA_PASSWORD), 
+//     { 
+//         encrypted: true 
+//     } 
+// );
+// const session = driver.session()
 
-var driver = _neo4jDriver["default"].driver(process.env.AURA_ENDPOINT, _neo4jDriver["default"].auth.basic(process.env.AURA_USERNAME, process.env.AURA_PASSWORD), {
-  encrypted: true
-});
-
-var session = driver.session();
 
 var readRulesBySection = function readRulesBySection(sectionTitle) {
   var query = "\n        MATCH (s:Section {title: $sectionTitle}), (p:Paragraph), (r:Rule)\n        WHERE (s)-[:CONTAINS]->(p) AND (p)-[:CONTAINS]->(r) \n        RETURN r\n        ORDER BY r.index";
-  return session.readTransaction(function (tx) {
+  return _database["default"].readTransaction(function (tx) {
     return tx.run(query, {
       sectionTitle: sectionTitle
     });
@@ -37,7 +39,7 @@ var readRulesBySection = function readRulesBySection(sectionTitle) {
 
 var readRulesByParagraph = function readRulesByParagraph(paragraphIndex, limit) {
   var query = "\n        MATCH (p:Paragraph {index: $paragraphIndex}), (r:Rule)\n        WHERE (p)-[:CONTAINS]->(r) \n        RETURN r\n        ORDER BY r.index LIMIT $limit";
-  return session.readTransaction(function (tx) {
+  return _database["default"].readTransaction(function (tx) {
     return tx.run(query, {
       paragraphIndex: paragraphIndex,
       limit: limit
@@ -47,7 +49,7 @@ var readRulesByParagraph = function readRulesByParagraph(paragraphIndex, limit) 
 
 var readRequirementsByType = function readRequirementsByType(paragraphIndex) {
   var query = "\n        MATCH (p:Paragraph {index: $paragraphIndex}), (r:Rule {desc: 'Requirements:'}), (s:SubRule)\n        WHERE (p)-[:CONTAINS]->(r) AND (r)-[:CONTAINS]->(s)\n        RETURN r, s\n        ORDER BY r, s.index";
-  return session.readTransaction(function (tx) {
+  return _database["default"].readTransaction(function (tx) {
     return tx.run(query, {
       paragraphIndex: paragraphIndex
     });
