@@ -1,53 +1,13 @@
 import dotenv from "dotenv"
 import express from "express"
 import bodyParser from 'body-parser'
-import session from "./database"
+import {readRequirementsByType, readRulesByParagraph} from "./queries"
 
 dotenv.config()
 
 const app = express()
 const bodyParserJSON = bodyParser.json();
 const bodyParserURLEncoded = bodyParser.urlencoded({ extended: true });
-
-// const driver = neo4j.driver(
-//     process.env.AURA_ENDPOINT, 
-//     neo4j.auth.basic(process.env.AURA_USERNAME, process.env.AURA_PASSWORD), 
-//     { 
-//         encrypted: true 
-//     } 
-// );
-
-// const session = driver.session()
-
-const readRulesBySection = (sectionTitle) => {
-    const query = `
-        MATCH (s:Section {title: $sectionTitle}), (p:Paragraph), (r:Rule)
-        WHERE (s)-[:CONTAINS]->(p) AND (p)-[:CONTAINS]->(r) 
-        RETURN r
-        ORDER BY r.index`;
-
-    return session.readTransaction(tx => tx.run(query, { sectionTitle }))
-}
-
-const readRulesByParagraph = (paragraphIndex, limit) => {
-    const query = `
-        MATCH (p:Paragraph {index: $paragraphIndex}), (r:Rule)
-        WHERE (p)-[:CONTAINS]->(r) 
-        RETURN r
-        ORDER BY r.index LIMIT $limit`;
-
-    return session.readTransaction(tx => tx.run(query, { paragraphIndex, limit }))
-}
-
-const readRequirementsByType = (paragraphIndex) => {
-    const query = `
-        MATCH (p:Paragraph {index: $paragraphIndex}), (r:Rule {desc: 'Requirements:'}), (s:SubRule)
-        WHERE (p)-[:CONTAINS]->(r) AND (r)-[:CONTAINS]->(s)
-        RETURN r, s
-        ORDER BY r, s.index`;
-
-    return session.readTransaction(tx => tx.run(query, { paragraphIndex }))
-}
 
 app.use(bodyParserJSON);
 app.use(bodyParserURLEncoded);
