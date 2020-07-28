@@ -36,7 +36,7 @@ app.post('/name-response', function (req, res) {
     }, {
       "say": firstName + " 😊. That's a lovely name."
     }, {
-      "say": "What is your country of?"
+      "say": "What is your country of citizenship or what country are you from?"
     }, {
       "listen": {
         "tasks": ["respond_to_nationality"]
