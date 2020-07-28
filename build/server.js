@@ -170,20 +170,28 @@ app.post('/study-duration-response', function (req, res) {
   return res.json(responseObject);
 });
 app.post('/age-response', function (req, res) {
-  console.log(req.body);
   var age = req.body.Field_age_Value;
-  console.log(age);
+  var paragraphIndex = '245ZT';
   var responseObject = {};
+  (0, _queries.readRulesByParagraph)(paragraphIndex).then(function (results) {
+    var records = results.records.map(function (record) {
+      return record._fields[0];
+    });
+    var rules = records.map(function (record) {
+      return record.properties.desc;
+    });
+    rules.forEach(function (rule) {
+      var say = {
+        "say": rule
+      };
+      actions.push(say);
+    });
+  });
 
   if (age >= 16) {
     responseObject = {
       "actions": [{
         "say": "You will need to apply for the Tier 4 (General) Student visa."
-      }, {
-        "remember": {
-          "section": "Tier 4 (General) Student" //to be used to query the database
-
-        }
       }, {
         "say": "Are you currently in the UK?"
       }, {

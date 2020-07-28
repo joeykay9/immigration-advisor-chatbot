@@ -228,24 +228,30 @@ app.post('/study-duration-response', (req, res) => {
 
 app.post('/age-response', (req, res) => {
 
-    console.log(req.body)
-
     let age = req.body.Field_age_Value
-
-    console.log(age)
+    let paragraphIndex = '245ZT'
 
     let responseObject = {}
+
+    readRulesByParagraph(paragraphIndex)
+    .then(results => {
+            let records = results.records.map(record => record._fields[0])
+            let rules = records.map(record => record.properties.desc)
+
+            rules.forEach(rule => {
+                let say = {
+                    "say": rule
+                }
+
+                actions.push(say)
+            })
+    })
 
     if(age >= 16) {
         responseObject = {
             "actions": [
                 {
                     "say": "You will need to apply for the Tier 4 (General) Student visa."
-                },
-                {
-                    "remember": {
-                        "section": "Tier 4 (General) Student" //to be used to query the database
-                    }
                 },
                 {
                     "say": "Are you currently in the UK?"

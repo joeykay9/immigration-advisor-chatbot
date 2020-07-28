@@ -10,7 +10,7 @@ const readRulesBySection = (sectionTitle) => {
     return session.readTransaction(tx => tx.run(query, { sectionTitle }))
 }
 
-const readRulesByParagraph = (paragraphIndex, limit) => {
+const readRulesByParagraph = (paragraphIndex, limit = 100) => {
     const query = `
         MATCH (p:Paragraph {index: $paragraphIndex}), (r:Rule)
         WHERE (p)-[:CONTAINS]->(r) 
