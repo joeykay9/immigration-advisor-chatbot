@@ -391,8 +391,6 @@ app.post('/tier-4-requirements-and-conditions', (req, res) => {
 
 app.post('/tier-4/paragraphs/:paragraph', (req, res) => {
 
-    let visa_type = JSON.parse(req.body.Memory).visa_type
-
     let paragraph = req.params.paragraph
     let paragraphIndex = ""
     let nextRoute = ""
@@ -440,23 +438,33 @@ app.post('/tier-4/paragraphs/:paragraph', (req, res) => {
                 actions.push(say)
             })
 
+            let say = {
+                "say": 'Do you wish to know the requirements?'
+            }
+
+            actions.push(say)
+
+            let listen = {}
+
             if(paragraph == 'entry-clearance-requirements-intro'){
-                let say = {
-                    "say": 'Do you wish to know the requirements?'
-                }
-
-                actions.push(say)
-
-                let listen = {
+                listen = {
                     "listen": {
                         tasks: [
                             "entry-clearance-requirements",
                         ]
                     }
                 }
-
-                actions.push(listen)
+            } else if(paragraph == 'leave-to-remain-requirements-intro'){
+                listen = {
+                    "listen": {
+                        tasks: [
+                            "leave-to-remain-requirements",
+                        ]
+                    }
+                }
             }
+
+            actions.push(listen)
 
             // let redirect = {
             //     "redirect": "task://" + nextRoute

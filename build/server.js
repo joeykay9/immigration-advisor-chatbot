@@ -290,7 +290,6 @@ app.post('/tier-4-requirements-and-conditions', function (req, res) {
   }
 });
 app.post('/tier-4/paragraphs/:paragraph', function (req, res) {
-  var visa_type = JSON.parse(req.body.Memory).visa_type;
   var paragraph = req.params.paragraph;
   var paragraphIndex = "";
   var nextRoute = "";
@@ -333,23 +332,30 @@ app.post('/tier-4/paragraphs/:paragraph', function (req, res) {
       };
       actions.push(say);
     });
+    var say = {
+      "say": 'Do you wish to know the requirements?'
+    };
+    actions.push(say);
+    var listen = {};
 
     if (paragraph == 'entry-clearance-requirements-intro') {
-      var say = {
-        "say": 'Do you wish to know the requirements?'
-      };
-      actions.push(say);
-      var listen = {
+      listen = {
         "listen": {
           tasks: ["entry-clearance-requirements"]
         }
       };
-      actions.push(listen);
-    } // let redirect = {
+    } else if (paragraph == 'leave-to-remain-requirements-intro') {
+      listen = {
+        "listen": {
+          tasks: ["leave-to-remain-requirements"]
+        }
+      };
+    }
+
+    actions.push(listen); // let redirect = {
     //     "redirect": "task://" + nextRoute
     // }
     // actions.push(redirect)
-
 
     responseObject = {
       "actions": actions
