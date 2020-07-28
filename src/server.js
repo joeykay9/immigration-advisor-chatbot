@@ -312,7 +312,7 @@ app.post('/current-location-response', (req, res) => {
                     }
                 },
                 {
-                    "say": "Do you want to know the requirements and conditions under the Point Based System for a successful Tier 4 (General) Student visa application to remain in the UK??"
+                    "say": "Do you want to know the requirements under the Point Based System for a successful Tier 4 (General) Student visa application to remain in the UK??"
                 },
                 {
                     "listen": {
@@ -332,7 +332,7 @@ app.post('/current-location-response', (req, res) => {
                     }
                 },
                 {
-                    "say": "Do you want to know the requirements and conditions under the Point Based System for a successful Tier 4 (General) Student visa application to enter the UK?"
+                    "say": "Do you want to know the requirements under the Point Based System for a successful Tier 4 (General) Student visa application to enter the UK?"
                 },
                 {
                     "listen": {
@@ -351,17 +351,28 @@ app.post('/current-location-response', (req, res) => {
 app.post('/tier-4-requirements-and-conditions', (req, res) => {
 
     let response = req.body.Field_response_Value
-
+    let visa_type = JSON.parse(req.body.Memory).visa_type
     let responseObject = {}
 
     if(response == "Yes"){
-        responseObject = {
-            "actions": [
-                {
-                    "redirect": "task://purpose-of-route"
-                }
-            ]
+        if(visa_type = 'Entry clearance'){
+            responseObject = {
+                "actions": [
+                    {
+                        "redirect": "task://entry-clearance-requirements-intro"
+                    }
+                ]
+            }
+        } else if(visa_type = 'Leave to remain'){
+            responseObject = {
+                "actions": [
+                    {
+                        "redirect": "task://leave-to-remain-requirements-intro"
+                    }
+                ]
+            }
         }
+        
 
         return res.json(responseObject)
 
@@ -387,18 +398,12 @@ app.post('/tier-4/paragraphs/:paragraph', (req, res) => {
     let nextRoute = ""
     let limit = 100
 
-    if (paragraph == 'purpose-of-route'){
-        paragraphIndex = '245ZT'
-        if(visa_type == 'Entry clearance')
-            nextRoute = 'entry-clearance'
-        else if(visa_type == 'Leave to remain')
-            nextRoute = 'leave-to-remain-requirements'
-    } 
     //entry clearance path
-    else if (paragraph == 'entry-clearance'){
-        paragraphIndex = '245ZU'
-        nextRoute = 'entry-clearance-requirements-intro'
-    } else if (paragraph == 'entry-clearance-requirements-intro'){
+    // if (paragraph == 'entry-clearance'){
+    //     paragraphIndex = '245ZU'
+    //     nextRoute = 'entry-clearance-requirements-intro'
+    // } 
+    if (paragraph == 'entry-clearance-requirements-intro'){
         paragraphIndex = '245ZV'
         limit = 1
         nextRoute = 'entry-clearance-grant-period-and-conditions'
@@ -407,8 +412,9 @@ app.post('/tier-4/paragraphs/:paragraph', (req, res) => {
         nextRoute = 'goodbye'
     } 
     //Leave to remain path
-    else if (paragraph == 'leave-to-remain-requirements'){
+    else if (paragraph == 'leave-to-remain-requirements-intro'){
         paragraphIndex = '245ZX'
+        limit = 1
         nextRoute = 'leave-to-remain-grant-period-and-conditions'
     } else if (paragraph == 'leave-to-remain-requirements'){
         paragraphIndex = '245ZY'
