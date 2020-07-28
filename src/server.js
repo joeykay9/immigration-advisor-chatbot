@@ -355,7 +355,7 @@ app.post('/tier-4-requirements-and-conditions', (req, res) => {
     let responseObject = {}
 
     if(response == "Yes"){
-        if(visa_type = 'Entry clearance'){
+        if(visa_type == 'Entry clearance'){
             responseObject = {
                 "actions": [
                     {
@@ -363,7 +363,7 @@ app.post('/tier-4-requirements-and-conditions', (req, res) => {
                     }
                 ]
             }
-        } else if(visa_type = 'Leave to remain'){
+        } else if(visa_type == 'Leave to remain'){
             responseObject = {
                 "actions": [
                     {

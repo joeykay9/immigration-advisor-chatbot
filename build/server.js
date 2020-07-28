@@ -265,13 +265,13 @@ app.post('/tier-4-requirements-and-conditions', function (req, res) {
   var responseObject = {};
 
   if (response == "Yes") {
-    if (visa_type = 'Entry clearance') {
+    if (visa_type == 'Entry clearance') {
       responseObject = {
         "actions": [{
           "redirect": "task://entry-clearance-requirements-intro"
         }]
       };
-    } else if (visa_type = 'Leave to remain') {
+    } else if (visa_type == 'Leave to remain') {
       responseObject = {
         "actions": [{
           "redirect": "task://leave-to-remain-requirements-intro"
