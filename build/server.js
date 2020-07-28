@@ -173,33 +173,41 @@ app.post('/age-response', function (req, res) {
   var age = req.body.Field_age_Value;
   var paragraphIndex = '245ZT';
   var responseObject = {};
-  (0, _queries.readRulesByParagraph)(paragraphIndex).then(function (results) {
-    var records = results.records.map(function (record) {
-      return record._fields[0];
-    });
-    var rules = records.map(function (record) {
-      return record.properties.desc;
-    });
-    rules.forEach(function (rule) {
-      var say = {
-        "say": rule
-      };
-      actions.push(say);
-    });
-  });
+  var actions = [];
 
   if (age >= 16) {
-    responseObject = {
-      "actions": [{
-        "say": "You will need to apply for the Tier 4 (General) Student visa."
-      }, {
+    var say = {
+      "say": "You will need to apply for the Tier 4 (General) Student visa."
+    };
+    actions.push(say);
+    (0, _queries.readRulesByParagraph)(paragraphIndex).then(function (results) {
+      var records = results.records.map(function (record) {
+        return record._fields[0];
+      });
+      var rules = records.map(function (record) {
+        return record.properties.desc;
+      });
+      rules.forEach(function (rule) {
+        say = {
+          "say": rule
+        };
+        actions.push(say);
+      });
+      say = {
         "say": "Are you currently in the UK?"
-      }, {
+      };
+      actions.push(say);
+      var listen = {
         "listen": {
           tasks: ["respond_to_current_location"]
         }
-      }]
-    };
+      };
+      actions.push(listen);
+      responseObject = {
+        "actions": actions
+      };
+      return res.json(responseObject);
+    });
   } else {
     responseObject = {
       "actions": [{
@@ -208,9 +216,8 @@ app.post('/age-response', function (req, res) {
         "redirect": "task://goodbye"
       }]
     };
+    return res.json(responseObject);
   }
-
-  return res.json(responseObject);
 });
 app.post('/current-location-response', function (req, res) {
   console.log(req.body);

@@ -232,39 +232,51 @@ app.post('/age-response', (req, res) => {
     let paragraphIndex = '245ZT'
 
     let responseObject = {}
+    let actions = []
 
-    readRulesByParagraph(paragraphIndex)
-    .then(results => {
+    if(age >= 16) {
+
+        let say = {
+            "say": "You will need to apply for the Tier 4 (General) Student visa."
+        }
+
+        actions.push(say)
+
+        readRulesByParagraph(paragraphIndex)
+        .then(results => {
             let records = results.records.map(record => record._fields[0])
             let rules = records.map(record => record.properties.desc)
 
             rules.forEach(rule => {
-                let say = {
+                say = {
                     "say": rule
                 }
 
                 actions.push(say)
             })
-    })
 
-    if(age >= 16) {
-        responseObject = {
-            "actions": [
-                {
-                    "say": "You will need to apply for the Tier 4 (General) Student visa."
-                },
-                {
-                    "say": "Are you currently in the UK?"
-                },
-                {
-                    "listen": {
-                        tasks: [
-                            "respond_to_current_location",
-                        ]
-                    }
-                },
-            ]
-        }
+            say = {
+                "say": "Are you currently in the UK?"
+            }
+            
+            actions.push(say)
+
+            let listen = {
+                "listen": {
+                    tasks: [
+                        "respond_to_current_location",
+                    ]
+                }
+            }
+
+            actions.push(listen)
+
+            responseObject = {
+                "actions": actions
+            }
+
+            return res.json(responseObject)
+        })
     } else {
         responseObject = {
             "actions": [
@@ -276,9 +288,9 @@ app.post('/age-response', (req, res) => {
                 }
             ]
         }
+
+        return res.json(responseObject)
     }
-    
-    return res.json(responseObject)
 })
 
 app.post('/current-location-response', (req, res) => {

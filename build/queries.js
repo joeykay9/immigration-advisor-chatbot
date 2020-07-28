@@ -20,7 +20,8 @@ var readRulesBySection = function readRulesBySection(sectionTitle) {
 
 exports.readRulesBySection = readRulesBySection;
 
-var readRulesByParagraph = function readRulesByParagraph(paragraphIndex, limit) {
+var readRulesByParagraph = function readRulesByParagraph(paragraphIndex) {
+  var limit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 100;
   var query = "\n        MATCH (p:Paragraph {index: $paragraphIndex}), (r:Rule)\n        WHERE (p)-[:CONTAINS]->(r) \n        RETURN r\n        ORDER BY r.index LIMIT $limit";
   return _database["default"].readTransaction(function (tx) {
     return tx.run(query, {
