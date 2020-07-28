@@ -229,7 +229,7 @@ app.post('/current-location-response', function (req, res) {
     responseObject = {
       "actions": [{
         "remember": {
-          "visa_type": "Entry clearance" //to be used to query the database
+          "visa_type": "Leave to remain" //to be used to query the database
 
         }
       }, {
@@ -244,7 +244,7 @@ app.post('/current-location-response', function (req, res) {
     responseObject = {
       "actions": [{
         "remember": {
-          "visa_type": "Leave to remain" //to be used to query the database
+          "visa_type": "Entry clearance" //to be used to query the database
 
         }
       }, {

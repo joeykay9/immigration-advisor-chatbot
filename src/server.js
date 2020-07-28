@@ -308,7 +308,7 @@ app.post('/current-location-response', (req, res) => {
             "actions": [
                 {
                     "remember": {
-                        "visa_type": "Entry clearance" //to be used to query the database
+                        "visa_type": "Leave to remain" //to be used to query the database
                     }
                 },
                 {
@@ -328,7 +328,7 @@ app.post('/current-location-response', (req, res) => {
             "actions": [
                 {
                     "remember": {
-                        "visa_type": "Leave to remain" //to be used to query the database
+                        "visa_type": "Entry clearance" //to be used to query the database
                     }
                 },
                 {
