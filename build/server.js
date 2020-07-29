@@ -22,6 +22,18 @@ var bodyParserURLEncoded = _bodyParser["default"].urlencoded({
 
 app.use(bodyParserJSON);
 app.use(bodyParserURLEncoded);
+app.use(function (req, res, next) {
+  console.log(req.body);
+
+  if (req.body.CurrentTaskConfidence <= 0.5) {
+    var responseObject = {
+      "actions": [{
+        "redirect": "task://fallback"
+      }]
+    };
+    return res.json(responseObject);
+  } else next();
+});
 app.get('/', function (req, res) {
   return res.send('Hello World!');
 });

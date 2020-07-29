@@ -12,6 +12,22 @@ const bodyParserURLEncoded = bodyParser.urlencoded({ extended: true });
 app.use(bodyParserJSON);
 app.use(bodyParserURLEncoded);
 
+app.use(function (req, res, next) {
+    console.log(req.body)
+    if(req.body.CurrentTaskConfidence <= 0.5){
+        let responseObject = {
+            "actions": [
+                {
+                    "redirect": "task://fallback"
+                }
+            ]
+        }
+
+        return res.json(responseObject)
+    } else
+        next()
+})
+
 app.get('/', (req, res) => res.send('Hello World!'))
 
 app.post('/name-response', (req, res) => {
